@@ -8,7 +8,7 @@
   },
   "scripts": {
     "compile": "truffle compile",
-    "deploy": "node deploy-uniswap-factory.js && truffle migrate --network development"
+    "deploy": "truffle compile && node deploy.js"
   },
   "author": "",
   "license": "ISC",

@@ -20,8 +20,8 @@ web3.eth.accounts.wallet.add({
 
 const addLiquidity = async (address0, amount0, address1, amount1) => {
    // query the block for details
-   // const block = await web3.eth.getBlock('latest');
-   // console.log(`Latest block timestamp: ${block.timestamp}.`);
+   const block = await web3.eth.getBlock('latest');
+   console.log(`Latest block timestamp: ${block.timestamp}.`);
 
    // approve the tokens first
    console.log(`Approving ${amount0} tokens from ${address0}.`);
@@ -41,7 +41,7 @@ const addLiquidity = async (address0, amount0, address1, amount1) => {
    const args = [
       address0, address1,
       amount0, amount1,
-      amount0, amount1,
+      "0", "0",
       USER_ADDRESS,
       Math.ceil(Date.now() / 1000) + (60 * 20), // 1 day
    ];

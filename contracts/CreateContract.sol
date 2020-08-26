@@ -28,8 +28,8 @@ contract CreateContract {
     return result;
   }
 
-  function callSub() external view returns (uint) {
+  function getSub() external view returns (address) {
     require(deployed != address(0x0));
-    return SubContract(deployed).getValue();
+    return deployed;
   }
 }

@@ -7,5 +7,8 @@ contract("TimeContract test", async (accounts) => {
     assert.isTrue(isTestable);
     let isBlockTestable = await time.isBlockTestable.call();
     assert.isTrue(isBlockTestable);
+
+    // TODO: test after timeout
+    // TODO: fail test
   });
 });

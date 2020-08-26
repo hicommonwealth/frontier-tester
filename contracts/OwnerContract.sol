@@ -11,8 +11,7 @@ contract OwnerContract {
   }
 
   modifier isOwner() {
-    if (msg.sender == owner) {
-      _;
-    }
+    require(msg.sender == owner, "only owner");
+    _;
   }
 }

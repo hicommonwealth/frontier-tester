@@ -9,6 +9,9 @@ contract("OwnerContract test", async (accounts) => {
   });
 
   it("should fail with wrong owner", async () => {
+    // NOTE: this will fail, because the error will be:
+    //     { code: -32603, message: 'inner executing call failed' }
+    // rather than a revert!
     let c = await OwnerContract.deployed();
     await truffleAssert.reverts(c.makeCall.call({ from: accounts[1] }), "only owner");
   });

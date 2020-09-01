@@ -13,11 +13,12 @@ contract("CreateContract test", async (accounts) => {
     // assert.equal(balance, "0");
 
     // create with value
-    const value = '1000000000';
+    const value = web3.utils.toWei('10', 'ether');
     await c.spawnWithValue({ value, from: accounts[0] });
     let subAddress = await c.getSub();
     let sub = await SubContract.at(subAddress);
     let balance = await sub.getValue();
+    console.log(balance, value);
     assert.equal(balance, value);
   });
 });

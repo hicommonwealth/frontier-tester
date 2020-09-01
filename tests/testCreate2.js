@@ -7,8 +7,7 @@ contract('Create2Factory test', async (accounts) => {
     let c = await Create2Factory.deployed();
 
     // load bytecode and deploy
-    const bytecode = ValueContractJSON.bytecode;
-    await c.deploy(bytecode, 5, { from: accounts[0] });
+    await c.deploy(5, { from: accounts[0] });
     const addr = await c.viewAddr.call();
 
     // load new contract and check methods

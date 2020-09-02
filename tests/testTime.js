@@ -14,6 +14,8 @@ contract("TimeContract test", async (accounts) => {
   it("should be testable", async () => {
     let t = await TimeContract.deployed();
 
+    let nowBeforeEndReceipt = await t.timeBeforeEnd();
+
     // fetch initial values
     let now = await t.viewNow.call();
     assert.equal(blockTimeifyDate(Date.now()).toString(), now.toString());

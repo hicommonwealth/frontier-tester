@@ -1,14 +1,17 @@
 const EdgewarePrivateKeyProvider = require ('./private-provider')
 const Web3 = require('web3');
+const utils = require('ethers').utils;
 
 // libraries
 const ERC20 = require('./build/contracts/ERC20.json');
 const UniswapV2Router02 = require('@uniswap/v2-periphery/build/UniswapV2Router02.json');
 const UniswapV2Factory = require('@uniswap/v2-core/build/UniswapV2Factory.json');
 const UniswapV2Pair = require('@uniswap/v2-core/build/UniswapV2Pair.json');
+const UniswapV2Library = require('./build/contracts/UniswapV2Library.json');
 
 // Initialization
 const USER_ADDRESS = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
+const LIBRARY_ADDRESS = '0x0120Bcf7EEe9712a7E6c4cce1Eb4c94f1F29a502';
 const ROUTER_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
 const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
 // const web3 = new Web3('https://rinkeby.infura.io/v3/b19b8175e688448ead43a0ab5f03438a');
@@ -22,6 +25,23 @@ web3.eth.accounts.wallet.add({
    address: USER_ADDRESS,
 });
 
+function getCreate2Address(
+   factoryAddress,
+   [tokenA, tokenB],
+   bytecode
+ ) {
+   const [token0, token1] = tokenA < tokenB ? [tokenA, tokenB] : [tokenB, tokenA]
+   const create2Inputs = [
+     '0xff',
+     factoryAddress,
+     utils.keccak256(utils.solidityPack(['address', 'address'], [token0, token1])),
+     utils.keccak256(bytecode)
+   ]
+   console.log(create2Inputs);
+   const sanitizedInputs = `0x${create2Inputs.map(i => i.slice(2)).join('')}`
+   return utils.getAddress(`0x${utils.keccak256(sanitizedInputs).slice(-40)}`)
+ }
+
 const addLiquidity = async (address0, amount0, address1, amount1) => {
    // query the block for details
    const block = await web3.eth.getBlock('latest');
@@ -30,34 +50,66 @@ const addLiquidity = async (address0, amount0, address1, amount1) => {
    // approve the tokens first
    console.log(`Approving ${amount0} tokens from ${address0}.`);
    const token0 = new web3.eth.Contract(ERC20.abi, address0);
-   const receipt0 = await token0.methods.approve(ROUTER_ADDRESS, amount0)
+   const receipt0 = await token0.methods.approve(ROUTER_ADDRESS, amount0 + amount0)
       .send({ from: USER_ADDRESS, gasLimit: 10000000, gasPrice: 1000000000 });
    console.log(`Tx complete on block ${receipt0.blockNumber}, hash: ${receipt0.transactionHash}.`);
 
    console.log(`Approving ${amount1} tokens from ${address1}.`);
    const token1 = new web3.eth.Contract(ERC20.abi, address1);
-   const receipt1 = await token1.methods.approve(ROUTER_ADDRESS, amount1)
+   const receipt1 = await token1.methods.approve(ROUTER_ADDRESS, amount1 + amount1)
       .send({ from: USER_ADDRESS, gasLimit: 10000000, gasPrice: 1000000000 });
    console.log(`Tx complete on block ${receipt1.blockNumber}, hash: ${receipt1.transactionHash}.`);
+
+   //  Check Balance
+   const user00 = await token0.methods.balanceOf(USER_ADDRESS).call();
+   const user01 = await token1.methods.balanceOf(USER_ADDRESS).call();
+   console.log(`User Balance for TokA: ${web3.utils.fromWei(user00)} and TokB: ${web3.utils.fromWei(user01)}`);
+
+   // Check Blocktime
+   const lastBlockNum = await web3.eth.getBlockNumber();
+   const lastBlock = await web3.eth.getBlock(lastBlockNum);
+   console.log(` last block time ${lastBlock.timestamp}`);
+   console.log(` Current time ${Date.now() / 1000}`);
+
+   const deadline =  Math.ceil(Date.now() / 1000) + (60 * 20) // 20 Min from last block time
+   console.log(` Deadline ${deadline}`);
+
 
    // then, create the pair
    const router = new web3.eth.Contract(UniswapV2Router02.abi, ROUTER_ADDRESS);
    const args = [
       address0, address1,
-      amount0, amount1,
+      "8000", "8000",
       "0", "0",
       USER_ADDRESS,
-      Math.ceil(Date.now() / 1000) + (60 * 20), // 1 day
+      deadline, // 1 day
    ];
    console.log('Adding liquidity with args: ', args);
    const liquidityReceipt = await router.methods.addLiquidity(...args)
-      .send({ from: USER_ADDRESS, gasLimit: 10000000, gasPrice: 1500000000 });
+      .send({ from: USER_ADDRESS, gasLimit: 100000000000000000000, gasPrice: 1500000000 });
    console.log(`Tx complete on block ${liquidityReceipt.blockNumber}, hash: ${liquidityReceipt.transactionHash}.`);
    
    // query the pair
    const factory = new web3.eth.Contract(UniswapV2Factory.abi, FACTORY_ADDRESS);
+   const library = new web3.eth.Contract(UniswapV2Library.abi, LIBRARY_ADDRESS);
+   const libPairAddress = await library.methods.pairFor(FACTORY_ADDRESS, address0, address1).call();
+   console.log('libPairAddress');
+   console.log(libPairAddress);
    const pairAddress = await factory.methods.getPair(address0, address1).call();
+   console.log('pairAddress');
    console.log(pairAddress);
+   const bytecode = `0x${UniswapV2Pair.evm.bytecode.object}`
+   const pairAddr = getCreate2Address(FACTORY_ADDRESS, [address0, address1], bytecode);
+   console.log('pairAddr');
+   console.log(pairAddr);
+   const bal0 = await token0.methods.balanceOf(pairAddr).call();
+   const bal1 = await token1.methods.balanceOf(pairAddr).call();
+
+   console.log(`Pair Balance for TokA: ${web3.utils.fromWei(bal0)} and TokB: ${web3.utils.fromWei(bal1)}`);
+   const user0 = await token0.methods.balanceOf(USER_ADDRESS).call();
+   const user1 = await token1.methods.balanceOf(USER_ADDRESS).call();
+   console.log(`User Balance for TokA: ${web3.utils.fromWei(user0)} and TokB: ${web3.utils.fromWei(user1)}`);
+
    const nPairs = await factory.methods.allPairsLength().call();
 
    // query the pair's reserves

@@ -3,6 +3,7 @@ const Web3 = require('web3');
 
 // libraries
 const Multicall = require('./build/contracts/Multicall.json');
+const UniswapV2Library = require('./build/contracts/UniswapV2Library.json');
 const WETH9 = require('@uniswap/v2-periphery/build/WETH9.json');
 const UniswapV2Factory = require('@uniswap/v2-core/build/UniswapV2Factory.json');
 const UniswapV2Router02 = require('@uniswap/v2-periphery/build/UniswapV2Router02.json');
@@ -33,8 +34,8 @@ const deployContract = async (name, c, args = []) => {
       {
          from: address,
          data,
-         gasLimit: 8000000,
-         gasPrice: 1000000000,
+         gasLimit: 80000000,
+         gasPrice: 10000000000,
       },
       privKey
    );
@@ -47,6 +48,9 @@ const deployContract = async (name, c, args = []) => {
 };
 
 const deploy = async () => {
+   const balance = await web3.eth.getBalance(address);
+   console.log(balance);
+
    const multicallAddress = await deployContract("Multicall", Multicall);
    const factoryAddress = await deployContract("UniswapV2Factory", UniswapV2Factory, [ address ]);
    const WETH9Address = await deployContract("WETH9", WETH9);
@@ -55,6 +59,7 @@ const deploy = async () => {
      UniswapV2Router02,
      [ factoryAddress, WETH9Address ],
    );
+   const UniswapV2LibraryAddress = await deployContract("UniswapV2Library", UniswapV2Library);
    const tokenAAddress = await deployContract("TokenA", TokenA, [ web3.utils.toWei('8000000') ]);
    const tokenBAddress = await deployContract("TokenB", TokenB, [ web3.utils.toWei('8000000') ]);
 };
@@ -90,5 +95,5 @@ const deployPair = async () => {
    }
 }
 
-// deploy();
-deployPair();
+deploy();
+// deployPair();

@@ -6,7 +6,7 @@ const mnemonic = "cushion member minute around tired true over mad fun drip ging
 module.exports = {
   compilers: {
     solc: {
-      version: "^0.5.0"
+      version: "=0.5.16"
     }
   },
   networks: {

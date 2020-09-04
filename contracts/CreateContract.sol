@@ -12,24 +12,19 @@ contract SubContract {
 }
 
 contract CreateContract {
-  address deployed;
+  address[] public deployed;
 
   constructor() public { }
 
   function spawn() external returns (SubContract subAddress) {
     SubContract result = new SubContract();
-    deployed = address(result);
+    deployed.push(address(result));
     return result;
   }
 
   function spawnWithValue() external payable returns (SubContract subAddress) {
     SubContract result = (new SubContract).value(msg.value)();
-    deployed = address(result);
+    deployed.push(address(result));
     return result;
-  }
-
-  function getSub() external view returns (address) {
-    require(deployed != address(0x0));
-    return deployed;
   }
 }

@@ -56,11 +56,11 @@ contract Lockdrop {
         // didStart
         // didNotEnd
     {
-        uint256 eth = msg.value;
+        // uint256 eth = msg.value;
         address owner = msg.sender;
         uint256 unlockTime = unlockTimeForTerm(term);
         // Create ETH lock contract
-        Lock lockAddr = (new Lock).value(eth)(owner, unlockTime);
+        Lock lockAddr = (new Lock).value(msg.value)(owner, unlockTime);
         // ensure lock contract has at least all the ETH, or fail
         // assert(address(lockAddr).balance >= msg.value);
         // emit Locked(owner, eth, lockAddr, term, edgewareAddr, isValidator, now);

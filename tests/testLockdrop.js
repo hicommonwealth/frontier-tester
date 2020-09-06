@@ -85,13 +85,20 @@ contract("Lockdrop test", async (accounts) => {
     const binput7 = [ lockdrop.address, startNonce + 5 ];
     const brlpEncoded7 = rlp.encode(binput7);
     const bcontractAddressLong7 = keccak('keccak256').update(brlpEncoded7).digest('hex');
-    const bcontractAddr7 = bcontractAddressLong6.substring(24);
+    const bcontractAddr7 = bcontractAddressLong7.substring(24);
+
+    const binput8 = [ lockdrop.address, startNonce + 6 ];
+    const brlpEncoded8 = rlp.encode(binput8);
+    const bcontractAddressLong8 = keccak('keccak256').update(brlpEncoded8).digest('hex');
+    const bcontractAddr8 = bcontractAddressLong8.substring(24);
+
+    const value = web3.utils.toWei('10', 'ether');
 
     await lockdrop.lock(THREE_MONTHS, accounts[0], true, {
       from: accounts[0],
-      value: 1,
+      value: value,
       gas: 1500000,
-      gasPrice: 1000000000,
+      gasPrice: 1000,
     });
 
     let balLock1 = await web3.eth.getBalance(bcontractAddr1);
@@ -100,6 +107,8 @@ contract("Lockdrop test", async (accounts) => {
     let balLock4 = await web3.eth.getBalance(bcontractAddr4);
     let balLock5 = await web3.eth.getBalance(bcontractAddr5);
     let balLock6 = await web3.eth.getBalance(bcontractAddr6);
+    let balLock7 = await web3.eth.getBalance(bcontractAddr7);
+    let balLock8 = await web3.eth.getBalance(bcontractAddr8);
 
     console.log(`Balance of ${balLock1} at address ${bcontractAddr1} for nonce ${startNonce}`);
     console.log(`Balance of ${balLock2} at address ${bcontractAddr2} for nonce ${startNonce + 1}`);
@@ -107,6 +116,8 @@ contract("Lockdrop test", async (accounts) => {
     console.log(`Balance of ${balLock4} at address ${bcontractAddr4} for nonce ${startNonce + 3}`);
     console.log(`Balance of ${balLock5} at address ${bcontractAddr5} for nonce ${startNonce + 4}`);
     console.log(`Balance of ${balLock6} at address ${bcontractAddr6} for nonce ${startNonce + 5}`);
+    console.log(`Balance of ${balLock7} at address ${bcontractAddr7} for nonce ${startNonce + 6}`);
+    console.log(`Balance of ${balLock8} at address ${bcontractAddr8} for nonce ${startNonce + 7}`);
 
     let senderBalanceAfter = await web3.eth.getBalance(accounts[0]);
 
@@ -128,9 +139,11 @@ contract("Lockdrop test", async (accounts) => {
 
     // assert.equal(bal, 1, 'Lock value should be 1 after lock');
 
+    const value2 = web3.utils.toWei('10', 'ether');
+
     await lockdrop.lock(THREE_MONTHS, accounts[0], true, {
       from: accounts[0],
-      value: 100,
+      value: value2,
       gas: 1500000,
       gasPrice: 1000000000,
     });
@@ -144,6 +157,8 @@ contract("Lockdrop test", async (accounts) => {
     balLock4 = await web3.eth.getBalance(bcontractAddr4);
     balLock5 = await web3.eth.getBalance(bcontractAddr5);
     balLock6 = await web3.eth.getBalance(bcontractAddr6);
+    balLock7 = await web3.eth.getBalance(bcontractAddr7);
+    balLock8 = await web3.eth.getBalance(bcontractAddr8);
 
     console.log(`Balance of ${balLock1} at address ${bcontractAddr1} for nonce ${startNonce}`);
     console.log(`Balance of ${balLock2} at address ${bcontractAddr2} for nonce ${startNonce + 1}`);
@@ -151,6 +166,8 @@ contract("Lockdrop test", async (accounts) => {
     console.log(`Balance of ${balLock4} at address ${bcontractAddr4} for nonce ${startNonce + 3}`);
     console.log(`Balance of ${balLock5} at address ${bcontractAddr5} for nonce ${startNonce + 4}`);
     console.log(`Balance of ${balLock6} at address ${bcontractAddr6} for nonce ${startNonce + 5}`);
+    console.log(`Balance of ${balLock7} at address ${bcontractAddr7} for nonce ${startNonce + 6}`);
+    console.log(`Balance of ${balLock8} at address ${bcontractAddr8} for nonce ${startNonce + 7}`);
 
     // const bal = await web3.eth.getBalance(contractAddr1);
     // assert.equal(bal, 1, 'Lock value should be 0 after lock')

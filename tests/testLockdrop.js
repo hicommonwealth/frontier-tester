@@ -19,7 +19,7 @@ contract("Lockdrop test", async (accounts) => {
   // });
 
   it('should setup and pull constants', async function () {
-       let lockdrop = await Lockdrop.deployed(); 
+    let lockdrop = await Lockdrop.deployed(); 
     let LOCK_DROP_PERIOD = (await lockdrop.LOCK_DROP_PERIOD()).toNumber();
     let LOCK_START_TIME = (await lockdrop.LOCK_START_TIME()).toNumber();
     let time = await utility.getCurrentTimestamp(web3);
@@ -43,10 +43,8 @@ contract("Lockdrop test", async (accounts) => {
   // Events don't work
   it('should lock funds and increment nonce', async function () {
     let lockdrop = await Lockdrop.deployed();
-    console.log(`lockdrop.address: ${lockdrop.address}`);
 
     let startNonce = await web3.eth.getTransactionCount(lockdrop.address);
-    console.log(`startNonce: ${startNonce}`);
     assert.equal(startNonce, '1', 'start nonce of deployed contract should be 1');
 
     let senderBalance = await web3.eth.getBalance(accounts[0]);
@@ -70,25 +68,20 @@ contract("Lockdrop test", async (accounts) => {
     let balLock3 = await web3.eth.getBalance(bcontractAddr3);
     let balLock4 = await web3.eth.getBalance(bcontractAddr4);
 
-    console.log(`Balance of ${balLock1} at address ${bcontractAddr1} for nonce ${startNonce}`);
-    console.log(`Balance of ${balLock2} at address ${bcontractAddr2} for nonce ${startNonce + 1}`);
-    console.log(`Balance of ${balLock3} at address ${bcontractAddr3} for nonce ${startNonce + 2}`);
-    console.log(`Balance of ${balLock4} at address ${bcontractAddr4} for nonce ${startNonce + 3}`);
+    assert.equal(value.toString(), balLock1, 'balance of first lock does not match expected');
+    assert.equal(0, balLock2, 'balance of future second lock does not match expected');
+    assert.equal(0, balLock3, 'balance of future third lock does not match expected');
+    assert.equal(0, balLock4, 'balance of future fourth lock does not match expected');
 
     let senderBalanceAfter = await web3.eth.getBalance(accounts[0]);
-
-    console.log(senderBalance - senderBalanceAfter);
-    // console.log(value);
-    // assert.isAtLeast(Number(senderBalance - senderBalanceAfter), Number(value), 'sent balance should be greater than lock value');
+    assert.isAtLeast(Number(senderBalance - senderBalanceAfter), Number(value), 'sent balance should be greater than lock value');
 
     const nonce = (await web3.eth.getTransactionCount(lockdrop.address));
     const contractAddr = getContractAddress(lockdrop.address, nonce - 1);
-    console.log(`after lock nonce: ${nonce}`);
     assert.equal(nonce, '2', 'contract nonce of Lockdrop contract should be 2 after lock')
 
     const bal0 = await web3.eth.getBalance(contractAddr);
 
-    console.log(`contractAddr: ${contractAddr} and balance ${bal0}`)  
     assert.equal(bal0, value, 'Lock value at address should be 10 eth after lock');
 
     const value2 = web3.utils.toWei('100', 'ether');
@@ -101,7 +94,6 @@ contract("Lockdrop test", async (accounts) => {
     });
 
     const new_nonce = (await web3.eth.getTransactionCount(lockdrop.address));
-    console.log(`new nonce for lockdrop: ${new_nonce}`);
     const new_contractAddr = getContractAddress(lockdrop.address, new_nonce - 1);
     const bal2 = await web3.eth.getBalance(new_contractAddr);
 
@@ -113,10 +105,10 @@ contract("Lockdrop test", async (accounts) => {
     balLock3 = await web3.eth.getBalance(bcontractAddr3);
     balLock4 = await web3.eth.getBalance(bcontractAddr4);
 
-    console.log(`Balance of ${balLock1} at address ${bcontractAddr1} for nonce ${startNonce}`);
-    console.log(`Balance of ${balLock2} at address ${bcontractAddr2} for nonce ${startNonce + 1}`);
-    console.log(`Balance of ${balLock3} at address ${bcontractAddr3} for nonce ${startNonce + 2}`);
-    console.log(`Balance of ${balLock4} at address ${bcontractAddr4} for nonce ${startNonce + 3}`);
+    assert.equal(value.toString(), balLock1, 'balance of first lock does not match expected');
+    assert.equal(value2.toString(), balLock2, 'balance of second lock does not match expected');
+    assert.equal(0, balLock3, 'balance of future third lock does not match expected');
+    assert.equal(0, balLock4, 'balance of future fourth lock does not match expected');
   });
 });
 

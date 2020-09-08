@@ -6,13 +6,19 @@ const mnemonic = "cushion member minute around tired true over mad fun drip ging
 module.exports = {
   compilers: {
     solc: {
-      version: "=0.5.16"
+      version: "=0.6.6",
+      // optimizer: {
+      //   enabled: true,
+      //   runs: 1
+      // },
     }
   },
   networks: {
     development: {
       provider: () => new EdgewarePrivateKeyProvider(edgewarePrivateKey, "http://localhost:9933/", 42),
-      network_id: 42
+      network_id: 42,
+      // gas: 2100000000, (potentially doesn't need to be this high)
+      skipDryRun: true
     },
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/b19b8175e688448ead43a0ab5f03438a", 0),

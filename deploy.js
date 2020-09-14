@@ -17,34 +17,7 @@ const address = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
 const provider = new EdgewarePrivateKeyProvider(privKey, "http://localhost:9933/", 42);
 const web3 = new Web3(provider);
 
-// Deploy contract
-const deployContract = async (name, c, args = []) => {
-   console.log(`Attempting to deploy ${name} from account: ${address}`);
-
-   const contract = new web3.eth.Contract(c.abi);
-
-   const contractTx = contract.deploy({
-      data: c.bytecode,
-      arguments: args,
-   });
-
-   const data = contractTx.encodeABI();
-   const createTransaction = await web3.eth.accounts.signTransaction(
-      {
-         from: address,
-         data,
-         gasLimit: 8000000,
-         gasPrice: 1000000000,
-      },
-      privKey
-   );
-
-   const createReceipt = await web3.eth.sendSignedTransaction(
-      createTransaction.rawTransaction
-   );
-   console.log(`${name} deployed at address ${createReceipt.contractAddress}`);
-   return createReceipt.contractAddress;
-};
+const { deployContract } = require('./utils');
 
 const deploy = async () => {
    const multicallAddress = await deployContract("Multicall", Multicall);

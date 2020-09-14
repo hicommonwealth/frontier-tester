@@ -8,10 +8,10 @@ const privKeyB = '99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E3
 const providerB = new EdgewarePrivateKeyProvider(privKeyB, 'http://localhost:9933/', 42);
 
 const web3 = new Web3(providerA);
-web3.eth.accounts.wallet.add({
-  privateKey: privKeyA,
-  address: providerA.address,
-});
+// web3.eth.accounts.wallet.add({
+//   privateKey: privKeyA,
+//   address: providerA.address,
+// });
 
 const test = async () => {
   const [ A, B ] = [ providerA.address, providerB.address ];

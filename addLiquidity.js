@@ -9,8 +9,8 @@ const UniswapV2Pair = require('@uniswap/v2-core/build/UniswapV2Pair.json');
 
 // Initialization
 const USER_ADDRESS = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
-const ROUTER_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
-const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
+const FACTORY_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
+const ROUTER_ADDRESS = '0x50275d3F95E0F2FCb2cAb2Ec7A231aE188d7319d';
 // const web3 = new Web3('https://rinkeby.infura.io/v3/b19b8175e688448ead43a0ab5f03438a');
 
 const privKey = '99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E342';
@@ -76,8 +76,8 @@ process.argv = process.argv.slice(2);
 if (process.argv.length < 4) {
    console.log('Insufficient arguments, using defaults.');
    addLiquidity(
-      '0xe573BCA813c741229ffB2488F7856C6cAa841041', web3.utils.toWei('8000'),
-      '0xBb0CC0fb3e0c06725c67167501f850B4900D6DB5', web3.utils.toWei('8000'),
+      '0x92496871560a01551E1B4fD04540D7A519D5C19e', web3.utils.toWei('500'),
+      '0x63A1519eE99d1121780FFfa1726Ed2eCc6d1611B', web3.utils.toWei('500'),
    );
 } else {
    addLiquidity(process.argv[0], process.argv[1], process.argv[2], process.argv[3]);

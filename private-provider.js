@@ -40,7 +40,7 @@ NonceSubProvider.prototype.handleRequest = function(payload, next, end) {
     }, (err, result) => {
       const nonce = typeof result.result == "string" ?
         result.result == "0x" ? 0 : parseInt(result.result.substring(2), 16) : 0;
-      payload.params[0].nonce = nonce || 0;
+      payload.params[0].nonce = '0x' + (nonce || 0);
       next();
     })
   } else {

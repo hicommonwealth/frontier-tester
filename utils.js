@@ -8,7 +8,11 @@ const initWeb3 = (pkey = privKey) => {
   const provider = new EdgewarePrivateKeyProvider(pkey, "http://localhost:9933/", 42);
   const web3 = new Web3(provider);
   return web3;
-}
+};
+
+const initProvider = (pkey = privKey) => {
+  return new EdgewarePrivateKeyProvider(pkey, "http://localhost:9933/", 42);
+};
 
 const deployContract = async (name, c, args = []) => {
   const web3 = initWeb3();
@@ -42,5 +46,6 @@ module.exports = {
   account,
   privKey,
   initWeb3,
+  initProvider,
   deployContract,
 }

@@ -1,23 +1,34 @@
 const { assert } = require("chai");
 const rlp = require('rlp');
 const keccak = require('keccak');
-const { deployContract, account, initWeb3 } = require('../utils');
+const { deployContract, account, initWeb3, initProvider } = require('../utils');
 
 const CreateContract = require('../build/contracts/CreateContract.json');
 const SubContract = require('../build/contracts/SubContract.json');
+const contract = require("@truffle/contract");
 
 describe("CreateContract test", async () => {
   it("should spawn subcontract", async () => {
     const web3 = initWeb3();
-    let c = await await deployContract('CreateContract', CreateContract);
+
+    var Create = contract({
+      abi: CreateContract.abi,
+      unlinked_binary: CreateContract.bytecode,
+    });
+    Create.setProvider(web3.currentProvider);
+
+    let c = await Create.new({ from: account });
     let startNonce = await web3.eth.getTransactionCount(c.address);
     console.log('startNonce');
     console.log(startNonce);
 
     // create without value
     await c.methods.spawn().send({ from: account });
+    console.log('a');
     let address = await c.methods.deployed(0).call({ from: account });
+    console.log('b');
     let sub = new web3.eth.Contract(SubContract.abi, address);
+    console.log('c');
     let balance = await sub.methods.getValue().call({ from: account });
     assert.equal(balance, '0', 'balance of deployed subcontract should be 0');
     console.log('deployed address no value')
@@ -29,14 +40,14 @@ describe("CreateContract test", async () => {
     console.log('nonce');
     console.log(nonce);
 
-    const input_1 = [ c.address, startNonce];
+    const input_1 = [ c.address, startNonce.toString(16) ];
     const rlpEncoded_1 = rlp.encode(input_1);
     const contractAddressLong_1 = keccak('keccak256').update(rlpEncoded_1).digest('hex');
     const contractAddr_1 = contractAddressLong_1.substring(24);
     console.log('subcontract addr with nonce 1');
     console.log(contractAddr_1);
 
-    const input_2 = [ c.address, startNonce + 1];
+    const input_2 = [ c.address, (startNonce + 1).toString(16)];
     const rlpEncoded_2 = rlp.encode(input_2);
     const contractAddressLong_2 = keccak('keccak256').update(rlpEncoded_2).digest('hex');
     const contractAddr_2 = contractAddressLong_2.substring(24);
@@ -67,7 +78,7 @@ describe("CreateContract test", async () => {
     console.log('nonce2');
     console.log(nonce);
 
-    const input_3 = [ c.address, startNonce + 2];
+    const input_3 = [ c.address, (startNonce + 2).toString(16) ];
     const rlpEncoded_3 = rlp.encode(input_3);
     const contractAddressLong_3 = keccak('keccak256').update(rlpEncoded_3).digest('hex');
     const contractAddr_3 = contractAddressLong_3.substring(24);

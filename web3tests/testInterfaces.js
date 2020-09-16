@@ -7,7 +7,7 @@ describe('Interfaces test', async () => {
     const ci = await deployContract('ContractImpl', ContractImpl);
     const icu = await deployContract('IContractUser', IContractUser);
 
-    const result = await icu.methods.linkContract(ci.address).call({ from: account });
+    const result = await icu.methods.linkContract(ci.address).call({ from: account, gasPrice: 1000000000 });
     assert.isTrue(result);
   });
 });

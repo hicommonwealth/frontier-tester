@@ -14,20 +14,20 @@ describe("TimeContract test", async () => {
   it("should be testable", async () => {
     let t = await deployContract('TimeContract', TimeContract);
 
-    await t.methods.timeBeforeEnd().send({ from: account });
+    await t.methods.timeBeforeEnd().send({ from: account, gasPrice: 1000000000 });
 
     // fetch initial values
-    let now = await t.methods.viewNow().call({ from: account });
+    let now = await t.methods.viewNow().call({ from: account, gasPrice: 1000000000 });
     assert.equal(blockTimeifyDate(Date.now()).toString(), now.toString());
 
     // wait 4s
     await timeout(4000);
-    const now2 = await t.methods.viewNow().call({ from: account });
+    const now2 = await t.methods.viewNow().call({ from: account, gasPrice: 1000000000 });
     assert.equal(blockTimeifyDate(Date.now()).toString(), now2.toString());
 
     // wait 4s
     await timeout(4000);
-    const now3 = await t.methods.viewNow().call({ from: account });
+    const now3 = await t.methods.viewNow().call({ from: account, gasPrice: 1000000000 });
     assert.equal(blockTimeifyDate(Date.now()).toString(), now3.toString());
   });
 });

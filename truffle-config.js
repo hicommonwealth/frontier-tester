@@ -13,7 +13,8 @@ module.exports = {
     development: {
       provider: () => new EdgewarePrivateKeyProvider(edgewarePrivateKey, "http://localhost:9933/", 42),
       network_id: 42,
-      skipDryRun: true
+      skipDryRun: true,
+      gasPrice: 100000000000
     },
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/b19b8175e688448ead43a0ab5f03438a", 0),

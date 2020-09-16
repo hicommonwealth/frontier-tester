@@ -5,7 +5,10 @@ const OwnerContract = require('../build/contracts/OwnerContract.json');
 describe("OwnerContract test", async () => {
   it("should have owner", async () => {
     let c = await deployContract('OwnerContract', OwnerContract);
-    let result = await c.methods.makeCall().call({ from: account });
+    let result = await c.methods.makeCall().call({
+      from: account,
+      gasPrice: 1000000000,
+    });
     assert.isTrue(result);
   });
 

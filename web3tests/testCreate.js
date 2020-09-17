@@ -11,7 +11,7 @@ describe("CreateContract test", async () => {
   it("should spawn subcontract", async () => {
     const web3 = initWeb3();
 
-    var Create = contract({
+    let Create = contract({
       abi: CreateContract.abi,
       unlinked_binary: CreateContract.bytecode,
     });
@@ -22,32 +22,38 @@ describe("CreateContract test", async () => {
     // create without value
     let res = await c.spawn({ from: account });
     console.log(res);
-    // let sub = new web3.eth.Contract(SubContract.abi, address);
-    // console.log('c');
-    // let balance = await sub.getValue().call({ from: account });
-    // assert.equal(balance, '0', 'balance of deployed subcontract should be 0');
-    // console.log('deployed address no value')
-    // console.log(address);
+    const address = res.receipt.to;
 
-    // // check nonce
-    // let nonce = await web3.eth.getTransactionCount(c.address);
-    // assert.equal(nonce, startNonce + 1, 'contract nonce should increment');
-    // console.log('nonce');
-    // console.log(nonce);
+    var Sub = contract({
+      abi: SubContract.abi,
+      unlinked_binary: SubContract.bytecode,
+    });
+    Sub.setProvider(web3.currentProvider);
+    let cSub = await Sub.at(address);
+    let balance = await cSub.getValue.call({ from: account });
+    assert.equal(balance, '0', 'balance of deployed subcontract should be 0');
+    console.log('deployed address no value')
+    console.log(address);
 
-    // const input_1 = [ c.address, startNonce.toString(16) ];
-    // const rlpEncoded_1 = rlp.encode(input_1);
-    // const contractAddressLong_1 = keccak('keccak256').update(rlpEncoded_1).digest('hex');
-    // const contractAddr_1 = contractAddressLong_1.substring(24);
-    // console.log('subcontract addr with nonce 1');
-    // console.log(contractAddr_1);
+    // check nonce
+    let nonce = await web3.eth.getTransactionCount(c.address);
+    assert.equal(nonce, startNonce + 1, 'contract nonce should increment');
+    console.log('nonce');
+    console.log(nonce);
 
-    // const input_2 = [ c.address, (startNonce + 1).toString(16)];
-    // const rlpEncoded_2 = rlp.encode(input_2);
-    // const contractAddressLong_2 = keccak('keccak256').update(rlpEncoded_2).digest('hex');
-    // const contractAddr_2 = contractAddressLong_2.substring(24);
-    // console.log('subcontract addr with nonce 2');
-    // console.log(contractAddr_2);
+    const input_1 = [ c.address, startNonce.toString(16) ];
+    const rlpEncoded_1 = rlp.encode(input_1);
+    const contractAddressLong_1 = keccak('keccak256').update(rlpEncoded_1).digest('hex');
+    const contractAddr_1 = contractAddressLong_1.substring(24);
+    console.log('subcontract addr with nonce 1');
+    console.log(contractAddr_1);
+
+    const input_2 = [ c.address, (startNonce + 1).toString(16)];
+    const rlpEncoded_2 = rlp.encode(input_2);
+    const contractAddressLong_2 = keccak('keccak256').update(rlpEncoded_2).digest('hex');
+    const contractAddr_2 = contractAddressLong_2.substring(24);
+    console.log('subcontract addr with nonce 2');
+    console.log(contractAddr_2);
 
     // /*
     //   Unsure if the contract nonce incrememts before or after

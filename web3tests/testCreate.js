@@ -20,9 +20,9 @@ describe("CreateContract test", async () => {
     let c = await Create.new({ from: account });
     let startNonce = await web3.eth.getTransactionCount(c.address);
     // create without value
-    let res = await c.spawn({ from: account });
-    console.log(res);
-    const address = res.receipt.to;
+    let receipt = await c.spawn({ from: account });
+    let address = await c.deployed.call({ from: account });
+    console.log(receipt);
 
     var Sub = contract({
       abi: SubContract.abi,

@@ -3,6 +3,7 @@ const utility = require('../helpers/util');
 const rlp = require('rlp');
 const keccak = require('keccak');
 const { assert } = require('chai');
+const contract = require("@truffle/contract");
 const { deployContract, account, initWeb3 } = require('../utils');
 
 describe("Lockdrop test", async () => {
@@ -10,40 +11,47 @@ describe("Lockdrop test", async () => {
   const THREE_MONTHS = 0;
   const SIX_MONTHS = 1;
   const TWELVE_MONTHS = 2;
+  let LD;
+  let web3;
 
-  // beforeEach(async function() {
-  //   let time = await utility.getCurrentTimestamp(web3);
-  //   lockdrop = await Lockdrop.new(time);
-  // });
+  before(async function() {
+    web3 = initWeb3();
+
+    LD = contract({
+      abi: Lockdrop.abi,
+      unlinked_binary: Lockdrop.bytecode,
+    });
+    LD.setProvider(web3.currentProvider);
+  });
 
   it('should setup and pull constants', async function () {
-    const web3 = initWeb3();
-    const lockdrop = await deployContract('Lockdrop', Lockdrop); 
-    const LOCK_DROP_PERIOD = (await lockdrop.methods.LOCK_DROP_PERIOD().call({ from: account })).toNumber();
-    const LOCK_START_TIME = (await lockdrop.methods.LOCK_START_TIME().call({ from: account })).toNumber();
-    const time = await utility.getCurrentTimestamp(web3);
+    let time = await utility.getCurrentTimestamp(web3);
+    let lockdrop = await LD.new(time, { from: account });
+    const LOCK_DROP_PERIOD = (await lockdrop.LOCK_DROP_PERIOD.call({ from: account })).toNumber();
+    const LOCK_START_TIME = (await lockdrop.LOCK_START_TIME.call({ from: account })).toNumber();
+    time = await utility.getCurrentTimestamp(web3);
     assert.equal(LOCK_DROP_PERIOD, SECONDS_IN_DAY * 92);
     assert.ok(LOCK_START_TIME <= time && time <= LOCK_START_TIME + 1000);
   });
 
   it('ensure the contract address matches JS RLP script', async function () {
-    const web3 = initWeb3();
+    let time = await utility.getCurrentTimestamp(web3);
+    let lockdrop = await LD.new(time, { from: account });
     const sender = account;
     const nonce = (await web3.eth.getTransactionCount(sender));
-    const input = [ sender, nonce ];
+    const input = [ sender, nonce - 1 ];
     const rlpEncoded = rlp.encode(input);
     const contractAddressLong = keccak('keccak256').update(rlpEncoded).digest('hex');
     const contractAddr = contractAddressLong.substring(24);
 
-    let time = await utility.getCurrentTimestamp(web3);
-    let tempLd = await deployContract('Lockdrop', Lockdrop, [ time ]);
-    assert.equal(web3.utils.toBN(tempLd.address).toString(), web3.utils.toBN(contractAddr).toString());
+    time = await utility.getCurrentTimestamp(web3);
+    assert.equal(web3.utils.toBN(lockdrop.address).toString(), web3.utils.toBN(contractAddr).toString());
   });
   
   // Events don't work
   it('should lock funds and increment nonce', async function () {
-    const web3 = initWeb3();
-    const lockdrop = await deployContract('Lockdrop', Lockdrop); 
+    let time = await utility.getCurrentTimestamp(web3);
+    let lockdrop = await LD.new(time, { from: account });
 
     let startNonce = await web3.eth.getTransactionCount(lockdrop.address);
     assert.equal(startNonce, '1', 'start nonce of deployed contract should be 1');
@@ -87,7 +95,7 @@ describe("Lockdrop test", async () => {
 
     const value2 = web3.utils.toWei('100', 'ether');
 
-    await lockdrop.methods.lock(THREE_MONTHS, account, true).send({
+    await lockdrop.lock(THREE_MONTHS, account, true, {
       from: account,
       value: value2,
       gas: 1500000,

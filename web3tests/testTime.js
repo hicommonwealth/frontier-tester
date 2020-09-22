@@ -1,6 +1,7 @@
 const { assert } = require("chai");
 const TimeContract = require("../build/contracts/TimeContract.json");
-const { deployContract, account } = require('../utils');
+const { initWeb3, account } = require('../utils');
+const contract = require("@truffle/contract");
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -12,22 +13,30 @@ function blockTimeifyDate(n) {
 
 describe("TimeContract test", async () => {
   it("should be testable", async () => {
-    let t = await deployContract('TimeContract', TimeContract);
+    const web3 = initWeb3();
+    let Time = contract({
+      abi: TimeContract.abi,
+      unlinked_binary: TimeContract.bytecode,
+    });
+    Time.setProvider(web3.currentProvider);
 
-    await t.methods.timeBeforeEnd().send({ from: account, gasPrice: 1000000000 });
+    let t = await Time.new({ from: account });
+    await t.timeBeforeEnd({ from: account, gasPrice: 1000000000 });
 
     // fetch initial values
-    let now = await t.methods.viewNow().call({ from: account, gasPrice: 1000000000 });
-    assert.equal(blockTimeifyDate(Date.now()).toString(), now.toString());
+    let now = await t.viewNow.call({ from: account });
+    let dNow = blockTimeifyDate(Date.now()).toString();
+    assert.equal(dNow.substring(0, dNow.length - 1), now.toString().substring(0, now.toString().length - 1));
+    // wait 4s
+    await timeout(4000);
+    const now2 = await t.viewNow.call({ from: account });
+    dNow = blockTimeifyDate(Date.now()).toString();
+    assert.equal(dNow.substring(0, dNow.length - 1), now2.toString().substring(0, now2.toString().length - 1));
 
-    // wait 5s
-    await timeout(5000);
-    const now2 = await t.methods.viewNow().call({ from: account, gasPrice: 1000000000 });
-    assert.equal(blockTimeifyDate(Date.now()).toString(), now2.toString());
-
-    // wait 5s
-    await timeout(5000);
-    const now3 = await t.methods.viewNow().call({ from: account, gasPrice: 1000000000 });
-    assert.equal(blockTimeifyDate(Date.now()).toString(), now3.toString());
+    // wait 4s
+    await timeout(4000);
+    const now3 = await t.viewNow.call({ from: account });
+    dNow = blockTimeifyDate(Date.now()).toString();
+    assert.equal(dNow.substring(0, dNow.length - 1), now3.toString().substring(0, now3.toString().length - 1));
   });
 });

@@ -9,6 +9,9 @@ contract IContractUser {
 
 	function linkContract(address a) public returns (bool) {
 		created = IContract(a);
+	}
+
+	function doTheThing() public view returns (bool) {
 		return created.doSomething();
 	}
 }

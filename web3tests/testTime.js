@@ -27,7 +27,6 @@ describe("TimeContract test", async () => {
     let now = await t.viewNow.call({ from: account });
     let dNow = blockTimeifyDate(Date.now()).toString();
     assert.equal(dNow.substring(0, dNow.length - 1), now.toString().substring(0, now.toString().length - 1));
-
     // wait 4s
     await timeout(4000);
     const now2 = await t.viewNow.call({ from: account });

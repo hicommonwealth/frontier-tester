@@ -2,7 +2,8 @@ const contract = require("@truffle/contract");
 const { assert } = require("chai");
 const { account, initWeb3 } = require('../utils');
 
-const ERC20 = require('../build/contracts/ERC20.json');
+const TokenA = require('../build/contracts/TokenA.json');
+const TokenB = require('../build/contracts/TokenB.json');
 const UniswapV2Router02 = require('../node_modules/@uniswap/v2-periphery/build/UniswapV2Router02.json');
 const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/UniswapV2Factory.json');
 const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
@@ -12,25 +13,34 @@ describe('Add Liquidity Test', () => {
       const FACTORY_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
       const ROUTER_ADDRESS = '0x50275d3F95E0F2FCb2cAb2Ec7A231aE188d7319d';
    
-      const address0 = '0x92496871560a01551E1B4fD04540D7A519D5C19e';
-      const address1 = '0x63A1519eE99d1121780FFfa1726Ed2eCc6d1611B';
+      // deploy two tokens
       const web3 = initWeb3();
-      const amount0 = web3.utils.toWei('100');
-      const amount1 = web3.utils.toWei('100');
+      const amount0 = web3.utils.toWei('10');
+      const amount1 = web3.utils.toWei('10');
    
-      const ERC20Contract = contract({
-         abi: ERC20.abi,
-         unlinked_binary: ERC20.bytecode,
+      const TokenAContract = contract({
+         abi: TokenA.abi,
+         unlinked_binary: TokenA.bytecode,
       });
-      ERC20Contract.setProvider(web3.currentProvider);
-      console.log('Fetching token contracts...');
-      const token0 = await ERC20Contract.at(address0);
-      const token1 = await ERC20Contract.at(address1);
-      console.log('Approving token 0...');
+      TokenAContract.setProvider(web3.currentProvider);
+      console.log('Deploying first token...');
+      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account });
+      const address0 = token0.address;
+
+      const TokenBContract = contract({
+         abi: TokenB.abi,
+         unlinked_binary: TokenB.bytecode,
+      });
+      TokenBContract.setProvider(web3.currentProvider);
+      console.log('Deploying second token...');
+      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account });
+      const address1 = token1.address;
+
+      console.log('Approving first token...');
       const receipt0 = await token0.approve(ROUTER_ADDRESS, amount0, {
          from: account, gasLimit: 10000000, gasPrice: 1000000000
       });
-      console.log('Approving token 1...');
+      console.log('Approving second token...');
       const receipt1 = await token1.approve(ROUTER_ADDRESS, amount1, {
          from: account, gasLimit: 10000000, gasPrice: 1000000000
       });

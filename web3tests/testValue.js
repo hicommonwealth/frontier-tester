@@ -24,6 +24,7 @@ describe("ValueContract test", async () => {
     balance = await web3.eth.getBalance(account);
 
     const updatedValue = await c.getValue.call({ from: account });
+    const updatedBalance = await web3.eth.getBalance(account);
     assert.equal(updatedValue.toString(), (new BN(valueStored)).add(new BN(valueToSend)).toString(), "contract value wrong");
   });
 
@@ -47,6 +48,8 @@ describe("ValueContract test", async () => {
     const tx = await c.sendValue({ value: valueToSend, from: account, gasPrice: 1000000000 });
 
     const updatedValue = await c.getValue.call({ from: account });
+    const updatedBalance = await web3.eth.getBalance(account);
     assert.equal(updatedValue.toString(), (new BN(valueStored)).add(new BN(valueToSend)).toString(), "contract value wrong");
+    assert.isTrue((new BN(updatedBalance)).lte((new BN(balance)).sub(new BN(valueToSend))), "account balance wrong");
   });
 });

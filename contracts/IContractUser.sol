@@ -5,7 +5,7 @@ import './IContract.sol';
 contract IContractUser {
 	IContract created;
 
-  constructor() public { }
+	constructor() public { }
 
 	function linkContract(address a) public returns (bool) {
 		created = IContract(a);

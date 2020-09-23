@@ -30,7 +30,7 @@ describe('ECRecovery test', async () => {
     assert.equal(address, account);
   });
 
-  it.only('should interact with precompile directly', async () => {
+  it('should interact with precompile directly', async () => {
     const web3 = initWeb3();
     const ECRECOVER_PRECOMPILE_ADDRESS = '0000000000000000000000000000000000000001';
 

@@ -44,6 +44,16 @@ describe('Hashing test', async () => {
     assert.equal(callResult, localResult);
   });
 
+  it('should obtain same ripemd results from contract and direct call', async () => {
+    const callResult = await web3.eth.call({
+      to: '0000000000000000000000000000000000000003',
+      from: account,
+      data: messageHex,
+    });
+    const contractResult = await c.callRipemd160.call(messageHex, { from: account });
+    assert.equal(callResult, contractResult);
+  })
+
   it('should perform sha256 thru contract', async () => {
     const contractResult = await c.callSha256.call(messageHex, { from: account });
     const localResult = sha256.hex(messageHex);
@@ -59,4 +69,14 @@ describe('Hashing test', async () => {
     const localResult = new RIPEMD160().update(messageHex).digest('hex');
     assert.equal(callResult, localResult);
   });
+
+  it('should obtain same sha256 results from contract and direct call', async () => {
+    const callResult = await web3.eth.call({
+      to: '0000000000000000000000000000000000000002',
+      from: account,
+      data: messageHex,
+    });
+    const contractResult = await c.callSha256.call(messageHex, { from: account });
+    assert.equal(callResult, contractResult);
+  })
 });

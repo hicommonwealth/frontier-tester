@@ -1,12 +1,9 @@
 const { assert } = require('chai');
 const contract = require("@truffle/contract");
-const { account, initWeb3, customRequest } = require('../utils');
+const { account, initWeb3, privKey } = require('../utils');
 const ECRecovery = require('../build/contracts/ECRecovery.json');
 
 describe('ECRecovery test', async () => {
-  const GENESIS_ACCOUNT = "0x6be02d1d3665660d22ff9624b7be0551ee1ac91b";
-  const GENESIS_ACCOUNT_PRIVATE_KEY = "0x99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E342";
-
   it('should recover account from signature and hash', async () => {
     const web3 = initWeb3();
 
@@ -52,9 +49,9 @@ describe('ECRecovery test', async () => {
       data: `0x${hash.toString('hex')}${sigPart}`,
     };
 
-    const raw_TX = await web3.eth.accounts.signTransaction(
+    const SIGNED_TX = await web3.eth.accounts.signTransaction(
       RAW_TX,
-      GENESIS_ACCOUNT_PRIVATE_KEY
+      privKey
     );
 
     const tx = await web3.eth.sendTransaction({
@@ -65,6 +62,6 @@ describe('ECRecovery test', async () => {
       data: `0x${hash.toString('hex')}${sigPart}`,
     });
 
-    assert.equal(tx.transactionHash, raw_TX.transactionHash);
+    assert.equal(tx.transactionHash, SIGNED_TX.transactionHash);
   });
 });

@@ -22,21 +22,41 @@ describe('Hashing test', async () => {
     c = await Hashing.new({ from: account });
   });
 
-  it('should perform keccak256', async () => {
+  it('should perform keccak256 thru contract', async () => {
     const contractResult = await c.callKeccak256.call(messageHex, { from: account });
     const localResult = web3.utils.keccak256(messageHex);
     assert.equal(contractResult, localResult);
   });
 
-  it('should perform ripemd160', async () => {
+  it('should perform ripemd160 thru contract', async () => {
     const contractResult = await c.callRipemd160.call(messageHex, { from: account });
     const localResult = new RIPEMD160().update(messageHex).digest('hex');
     assert.equal(contractResult, localResult);
   });
 
-  it('should perform sha256', async () => {
+  it('should perform ripemd160 directly', async () => {
+    const callResult = await web3.eth.call({
+      to: '0000000000000000000000000000000000000003',
+      from: account,
+      data: messageHex,
+    });
+    const localResult = new RIPEMD160().update(messageHex).digest('hex');
+    assert.equal(callResult, localResult);
+  });
+
+  it('should perform sha256 thru contract', async () => {
     const contractResult = await c.callSha256.call(messageHex, { from: account });
     const localResult = sha256.hex(messageHex);
     assert.equal(contractResult, localResult);
+  });
+
+  it('should perform sha256 directly', async () => {
+    const callResult = await web3.eth.call({
+      to: '0000000000000000000000000000000000000002',
+      from: account,
+      data: messageHex,
+    });
+    const localResult = new RIPEMD160().update(messageHex).digest('hex');
+    assert.equal(callResult, localResult);
   });
 });

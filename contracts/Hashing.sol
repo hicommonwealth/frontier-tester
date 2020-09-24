@@ -5,7 +5,7 @@ contract Hashing {
     return keccak256(input);
   }
 
-  function callRipemd160(bytes memory input) public pure returns(bytes32 result) {
+  function callRipemd160(bytes memory input) public pure returns(bytes20 result) {
     return ripemd160(input);
   }
 

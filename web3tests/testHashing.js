@@ -5,11 +5,19 @@ const HashingContract = require('../build/contracts/Hashing.json');
 const RIPEMD160 = require('ripemd160');
 const { sha256 } = require('js-sha256');
 
+// web3.eth.call returns a 32-byte hex string, but RIPEMD160 only returns a 20-byte result,
+// so we need to trim the leading 0s off the call's return value in order to compare strings
+// for equality.
+const trimLeadingHex0s = (web3, n) => {
+  return web3.utils.numberToHex(web3.utils.hexToNumberString(n));
+}
+
 describe('Hashing test', async () => {
   let web3;
   let c;
   const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tubulum fuisse, qua illum, cuius is condemnatus est rogatione, P. Eaedem res maneant alio modo.'
-  const messageHex = '0x' + Buffer.from(message).toString('hex');
+  const messageBuf = Buffer.from(message);
+  const messageHex = '0x' + messageBuf.toString('hex');
 
   before(async () => {
     // setup web3 and contract instance
@@ -23,14 +31,14 @@ describe('Hashing test', async () => {
   });
 
   it('should perform keccak256 thru contract', async () => {
-    const contractResult = await c.callKeccak256.call(messageHex, { from: account });
+    const contractResult = await c.callKeccak256.call(messageBuf, { from: account });
     const localResult = web3.utils.keccak256(messageHex);
     assert.equal(contractResult, localResult);
   });
 
   it('should perform ripemd160 thru contract', async () => {
     const contractResult = await c.callRipemd160.call(messageHex, { from: account });
-    const localResult = new RIPEMD160().update(messageHex).digest('hex');
+    const localResult = '0x' + (new RIPEMD160().update(messageBuf).digest('hex'));
     assert.equal(contractResult, localResult);
   });
 
@@ -40,8 +48,8 @@ describe('Hashing test', async () => {
       from: account,
       data: messageHex,
     });
-    const localResult = new RIPEMD160().update(messageHex).digest('hex');
-    assert.equal(callResult, localResult);
+    const localResult = '0x' + (new RIPEMD160().update(messageBuf).digest('hex'));
+    assert.equal(trimLeadingHex0s(web3, callResult), localResult);
   });
 
   it('should obtain same ripemd results from contract and direct call', async () => {
@@ -51,12 +59,12 @@ describe('Hashing test', async () => {
       data: messageHex,
     });
     const contractResult = await c.callRipemd160.call(messageHex, { from: account });
-    assert.equal(callResult, contractResult);
+    assert.equal(trimLeadingHex0s(web3, callResult), contractResult);
   })
 
   it('should perform sha256 thru contract', async () => {
     const contractResult = await c.callSha256.call(messageHex, { from: account });
-    const localResult = sha256.hex(messageHex);
+    const localResult = '0x' + sha256.hex(messageBuf);
     assert.equal(contractResult, localResult);
   });
 
@@ -66,7 +74,7 @@ describe('Hashing test', async () => {
       from: account,
       data: messageHex,
     });
-    const localResult = new RIPEMD160().update(messageHex).digest('hex');
+    const localResult = '0x' + sha256.hex(messageBuf);
     assert.equal(callResult, localResult);
   });
 

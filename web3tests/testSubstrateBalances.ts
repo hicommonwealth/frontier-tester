@@ -121,33 +121,35 @@ describe('Substrate <> EVM balances test', async () => {
     const value = new BN('10000000000000000000');
     const privKey = '99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E343';
     const provider = new EdgewarePrivateKeyProvider(privKey, web3Url, id);
-    const localWeb3 = new Web3(provider);
-    const localAddress = provider.address;
-    const localSubstrateAddress: string = convertToSubstrateAddress(localAddress, id);
-    await sendSubstrateBalance(value.muln(2), localSubstrateAddress);
+    const web3 = new Web3(provider);
+    const senderAddress = provider.address;
+    const senderSubstrateAddress: string = convertToSubstrateAddress(senderAddress, id);
+
+    // give the EVM account some balance to send back via web3
+    await sendSubstrateBalance(value.muln(2), senderSubstrateAddress);
 
     // query start balances
-    const web3StartBalance = await localWeb3.eth.getBalance(evmAddress);
-    const localWeb3StartBalance = await localWeb3.eth.getBalance(localAddress);
-    const localEvmSubstrateStartBalance = await api.query.system.account(localSubstrateAddress);
-    assert.isTrue(localWeb3.utils.toBN(localWeb3StartBalance).gt(value), 'evm account must have sufficient balance');
-    assert.equal(localWeb3StartBalance, localEvmSubstrateStartBalance.data.free.toString(), 'substrate balance does not match web3 balance');
+    const web3StartBalance = await web3.eth.getBalance(evmAddress);
+    const senderWeb3StartBalance = await web3.eth.getBalance(senderAddress);
+    const senderEvmSubstrateStartBalance = await api.query.system.account(senderSubstrateAddress);
+    assert.isTrue(web3.utils.toBN(senderWeb3StartBalance).gt(value), 'evm account must have sufficient balance');
+    assert.equal(senderWeb3StartBalance, senderEvmSubstrateStartBalance.data.free.toString(), 'substrate balance does not match web3 balance');
 
     // perform web3 call, send value back to the original substrate/alice account
-    const gasPrice = localWeb3.utils.toWei("1", 'gwei');
-    const receipt = await localWeb3.eth.sendTransaction({
-      from: localAddress, to: evmAddress, value: value.toString(), gasPrice
+    const gasPrice = web3.utils.toWei("1", 'gwei');
+    const receipt = await web3.eth.sendTransaction({
+      from: senderAddress, to: evmAddress, value: value.toString(), gasPrice
     });
     const gasUsed = web3.utils.toBN(web3.utils.toWei(`${receipt.gasUsed}`, 'gwei'));
 
-    // verify balances
-    const web3EndBalance = await localWeb3.eth.getBalance(evmAddress);
+    // verify end balances
+    const web3EndBalance = await web3.eth.getBalance(evmAddress);
     const evmSubstrateEndBalance = await api.query.system.account(substrateEvmAddress);
-    const localWeb3EndBalance = await localWeb3.eth.getBalance(localAddress);
-    const localEvmSubstrateEndBalance = await api.query.system.account(localSubstrateAddress);
-    assert.equal(localWeb3EndBalance, localEvmSubstrateEndBalance.data.free.toString(), 'sender substrate balance does not match web3 balance');
-    assert.equal(localWeb3EndBalance, localWeb3.utils.toBN(localWeb3StartBalance).sub(value).sub(gasUsed).toString(), 'incorrect web3 sender balance');
-    assert.equal(web3EndBalance, localWeb3.utils.toBN(web3StartBalance).add(value).toString(), 'incorrect web3 recipient balance');
+    const senderWeb3EndBalance = await web3.eth.getBalance(senderAddress);
+    const senderEvmSubstrateEndBalance = await api.query.system.account(senderSubstrateAddress);
+    assert.equal(senderWeb3EndBalance, senderEvmSubstrateEndBalance.data.free.toString(), 'sender substrate balance does not match web3 balance');
+    assert.equal(senderWeb3EndBalance, web3.utils.toBN(senderWeb3StartBalance).sub(value).sub(gasUsed).toString(), 'incorrect web3 sender balance');
+    assert.equal(web3EndBalance, web3.utils.toBN(web3StartBalance).add(value).toString(), 'incorrect web3 recipient balance');
     assert.equal(web3EndBalance, evmSubstrateEndBalance.data.free.toString(), 'recipient substrate balance does not match web3 balance')
   });
 });

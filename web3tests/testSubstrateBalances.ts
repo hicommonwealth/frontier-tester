@@ -27,7 +27,10 @@ describe('Substrate <> EVM balances test', async () => {
     // init polkadot
     const polkadotUrl = 'ws://localhost:9944';
     api = await new ApiPromise({
-      provider: new WsProvider(polkadotUrl)
+      provider: new WsProvider(polkadotUrl),
+      types: {
+        RefCount: 'RefCountTo259'
+      }
     }).isReady;
     const { ss58Format } = await api.rpc.system.properties();
     const substrateId = +ss58Format.unwrap();

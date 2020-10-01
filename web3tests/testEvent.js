@@ -1,6 +1,7 @@
 const { assert } = require('chai');
+const Web3 = require('web3');
 const EventContract = require('../build/contracts/EventContract.json');
-const { deployContract, account, initWeb3 } = require('../utils');
+const { deployContract, account, initWeb3, privKey } = require('../utils');
 const contract = require("@truffle/contract");
 
 describe("EventContract test", async () => {
@@ -18,22 +19,35 @@ describe("EventContract test", async () => {
   });
 
   it('should receive event thru web3 subscribe', async () => {
-    const c = await deployContract('EventContract', EventContract);
+    // init with wsprovider
+    const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:9944/"));
+    web3.eth.accounts.wallet.add({
+      privateKey: privKey,
+      address: account,
+    });
+    const c = await deployContract('EventContract', EventContract, [], web3);
 
     // init subscription
-    const subP = new Promise((resolve) => {
-      c.once('e', (err, eventData) => {
-        if (err) {
-          assert.fail(err.message);
-        } else {
-          console.log(eventData);
-          resolve();
-        }
+    await new Promise(async (resolve) => {
+      c.events.e().on('data', (data) => {
+        console.log(data);
+        resolve();
       });
-    })
 
-    // make the call
-    await c.methods.emitEvent().send({ from: account });
-    await subP;
+      // make the tx
+      // NOTE: we cannot use .send() because `sendTransaction` is not supported
+      const tx = c.methods.emitEvent();
+      const data = tx.encodeABI();
+      const signedTx = await web3.eth.accounts.signTransaction(
+        {
+          from: account,
+          data,
+          gasLimit: 8000000,
+          gasPrice: 1000000000,
+        },
+        privKey
+      );
+      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+    });
   })
 });

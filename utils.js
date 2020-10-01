@@ -1,4 +1,4 @@
-const EdgewarePrivateKeyProvider = require('./private-provider')
+const EdgewarePrivateKeyProvider = require('./private-provider');
 const Web3 = require('web3');
 const { decodeAddress, encodeAddress, blake2AsHex } = require('@polkadot/util-crypto');
 
@@ -15,8 +15,10 @@ const initProvider = (pkey = privKey) => {
   return new EdgewarePrivateKeyProvider(pkey, "http://localhost:9933/", 42);
 };
 
-const deployContract = async (name, c, args = []) => {
-  const web3 = initWeb3();
+const deployContract = async (name, c, args = [], web3 = undefined) => {
+  if (!web3) {
+    web3 = initWeb3();
+  }
   console.log(`Attempting to deploy ${name} from account: ${account}`);
   const contract = new web3.eth.Contract(c.abi);
 

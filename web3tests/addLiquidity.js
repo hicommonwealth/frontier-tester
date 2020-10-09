@@ -18,22 +18,22 @@ describe('Add Liquidity Test', () => {
       const amount0 = web3.utils.toWei('10');
       const amount1 = web3.utils.toWei('10');
    
+      console.log('Deploying first token...');
       const TokenAContract = contract({
          abi: TokenA.abi,
          unlinked_binary: TokenA.bytecode,
       });
       TokenAContract.setProvider(web3.currentProvider);
-      console.log('Deploying first token...');
-      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account });
+      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account, gasPrice: 1000000000 });
       const address0 = token0.address;
 
+      console.log('Deploying second token...');
       const TokenBContract = contract({
          abi: TokenB.abi,
          unlinked_binary: TokenB.bytecode,
       });
       TokenBContract.setProvider(web3.currentProvider);
-      console.log('Deploying second token...');
-      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account });
+      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account, gasPrice: 1000000000 });
       const address1 = token1.address;
 
       console.log('Approving first token...');

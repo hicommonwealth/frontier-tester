@@ -15,7 +15,29 @@ describe('Substrate <> EVM balances test', async () => {
   let address: string;
   let evmAddress: string;
   let substrateEvmAddress: string;
-  let sendSubstrateBalance: (value: BN, addr?: string) => Promise<BN>;
+
+  const value = new BN('10000000000000000000');
+
+  // returns the fee
+  let sendSubstrateBalance = async (v: BN, addr = substrateEvmAddress): Promise<BN> => {
+    return new Promise(async (resolve) => {
+      const tx = api.tx.balances.transfer(addr, v);
+      const { partialFee } = await tx.paymentInfo(keyring);
+      tx.signAndSend(keyring, (result) => {
+        if (result.isError) {
+          assert.fail('tx failure');
+        }
+        if (result.isCompleted) {
+          resolve(partialFee);
+        }
+      });
+    })
+  }
+
+  const fetchBalance = async (acct: string): Promise<BN> => {
+    const res = await api.query.system.account(acct);
+    return res.data.free;
+  }
 
   before(async () => {
     // init web3
@@ -28,9 +50,7 @@ describe('Substrate <> EVM balances test', async () => {
     const polkadotUrl = 'ws://localhost:9944';
     api = await new ApiPromise({
       provider: new WsProvider(polkadotUrl),
-      types: {
-        RefCount: 'RefCountTo259'
-      }
+      types: { }
     }).isReady;
     const { ss58Format } = await api.rpc.system.properties();
     const substrateId = +ss58Format.unwrap();
@@ -41,58 +61,39 @@ describe('Substrate <> EVM balances test', async () => {
     address = keyring.address;
     evmAddress = convertToEvmAddress(address);
     substrateEvmAddress = convertToSubstrateAddress(evmAddress);
-
-    // returns the tx fees
-    sendSubstrateBalance = async (value: BN, addr = substrateEvmAddress): Promise<BN> => {
-      return new Promise(async (resolve) => {
-        const tx = api.tx.balances.transfer(addr, value);
-        const { partialFee } = await tx.paymentInfo(keyring);
-        tx.signAndSend(keyring, (result) => {
-          if (result.isError) {
-            assert.fail('tx failure');
-          }
-          if (result.isCompleted) {
-            resolve(partialFee);
-          }
-        });
-      })
-    }
-  })
+  });
 
   it('should fund account via transfer', async () => {
-    const value = new BN('10000000000000000000');
-  
     // query start balances
     const web3StartBalance = await web3.eth.getBalance(evmAddress);
-    const polkadotStartBalance = await api.query.system.account(address);
-    const evmSubstrateStartBalance = await api.query.system.account(substrateEvmAddress);
+    const polkadotStartBalance = await fetchBalance(address);
+    const evmSubstrateStartBalance = await fetchBalance(substrateEvmAddress);
   
-    assert.isTrue(polkadotStartBalance.data.free.gt(value), 'sender account must have sufficient balance');
-    assert.equal(web3StartBalance, evmSubstrateStartBalance.data.free.toString(), 'substrate balance does not match web3 balance');
+    assert.isTrue(polkadotStartBalance.gt(value), 'sender account must have sufficient balance');
+    assert.equal(web3StartBalance, evmSubstrateStartBalance.toString(), 'substrate balance does not match web3 balance');
 
     const fees = await sendSubstrateBalance(value);
 
     // query final balances
-    const polkadotEndBalance = await api.query.system.account(address);
-    const evmSubstrateEndBalance = await api.query.system.account(substrateEvmAddress);
+    const polkadotEndBalance = await fetchBalance(address);
+    const evmSubstrateEndBalance = await fetchBalance(substrateEvmAddress);
     const web3EndBalance = await web3.eth.getBalance(evmAddress);
 
-    assert.equal(polkadotEndBalance.data.free.toString(), polkadotStartBalance.data.free.sub(value).sub(fees).toString(), 'incorrect sender account balance');
-    assert.equal(web3EndBalance, evmSubstrateEndBalance.data.free.toString(), 'substrate balance does not match web3 balance');
-    assert.equal(evmSubstrateEndBalance.data.free.toString(), evmSubstrateStartBalance.data.free.add(value).toString(), 'incorrect web3 account balance');
+    assert.equal(polkadotEndBalance.toString(), polkadotStartBalance.sub(value).sub(fees).toString(), 'incorrect sender account balance');
+    assert.equal(web3EndBalance, evmSubstrateEndBalance.toString(), 'substrate balance does not match web3 balance');
+    assert.equal(evmSubstrateEndBalance.toString(), evmSubstrateStartBalance.add(value).toString(), 'incorrect web3 account balance');
   });
 
   it('should withdraw via evm pallet', async () => {
     // ensure the evm account has balance
-    const value = new BN('10000000000000000000');
-    await sendSubstrateBalance(value.muln(2));
+    await sendSubstrateBalance(value.clone().muln(2));
 
     // query start balances
     const web3StartBalance = await web3.eth.getBalance(evmAddress);
-    const polkadotStartBalance = await api.query.system.account(address);
-    const evmSubstrateStartBalance = await api.query.system.account(substrateEvmAddress);
-    assert.isTrue(evmSubstrateStartBalance.data.free.gt(value), 'evm account must have sufficient balance');
-    assert.equal(web3StartBalance, evmSubstrateStartBalance.data.free.toString(), 'substrate balance does not match web3 balance');
+    const polkadotStartBalance = await fetchBalance(address);
+    const evmSubstrateStartBalance = await fetchBalance(substrateEvmAddress);
+    assert.isTrue(evmSubstrateStartBalance.gt(value), 'evm account must have sufficient balance');
+    assert.equal(web3StartBalance, evmSubstrateStartBalance.toString(), 'substrate balance does not match web3 balance');
 
     // execute withdraw
     const fees: BN = await new Promise(async (resolve) => {
@@ -109,19 +110,18 @@ describe('Substrate <> EVM balances test', async () => {
     });
 
     // query end balances
-    const polkadotEndBalance = await api.query.system.account(address);
-    const evmSubstrateEndBalance = await api.query.system.account(substrateEvmAddress);
+    const polkadotEndBalance = await fetchBalance(address);
+    const evmSubstrateEndBalance = await fetchBalance(substrateEvmAddress);
     const web3EndBalance = await web3.eth.getBalance(evmAddress);
 
-    assert.equal(polkadotEndBalance.data.free.toString(), polkadotStartBalance.data.free.add(value).sub(fees).toString(), 'incorrect sender account balance');
-    assert.equal(web3EndBalance, evmSubstrateEndBalance.data.free.toString(), 'substrate balance does not match web3 balance');
-    assert.equal(evmSubstrateEndBalance.data.free.toString(), evmSubstrateStartBalance.data.free.sub(value).toString(), 'incorrect web3 account balance');
+    assert.equal(polkadotEndBalance.toString(), polkadotStartBalance.add(value).sub(fees).toString(), 'incorrect sender account balance');
+    assert.equal(web3EndBalance, evmSubstrateEndBalance.toString(), 'substrate balance does not match web3 balance');
+    assert.equal(evmSubstrateEndBalance.toString(), evmSubstrateStartBalance.sub(value).toString(), 'incorrect web3 account balance');
 
   });
 
   it('should update substrate balances from web3 tx', async () => {
     // start with an EVM account with a known private key
-    const value = new BN('10000000000000000000');
     const privKey = '99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E343';
     const provider = new EdgewarePrivateKeyProvider(privKey, web3Url, id);
     const web3 = new Web3(provider);
@@ -129,14 +129,14 @@ describe('Substrate <> EVM balances test', async () => {
     const senderSubstrateAddress: string = convertToSubstrateAddress(senderAddress, id);
 
     // give the EVM account some balance to send back via web3
-    await sendSubstrateBalance(value.muln(2), senderSubstrateAddress);
+    await sendSubstrateBalance(value.clone().muln(2), senderSubstrateAddress);
 
     // query start balances
     const web3StartBalance = await web3.eth.getBalance(evmAddress);
     const senderWeb3StartBalance = await web3.eth.getBalance(senderAddress);
-    const senderEvmSubstrateStartBalance = await api.query.system.account(senderSubstrateAddress);
+    const senderEvmSubstrateStartBalance = await fetchBalance(senderSubstrateAddress);
     assert.isTrue(web3.utils.toBN(senderWeb3StartBalance).gt(value), 'evm account must have sufficient balance');
-    assert.equal(senderWeb3StartBalance, senderEvmSubstrateStartBalance.data.free.toString(), 'substrate balance does not match web3 balance');
+    assert.equal(senderWeb3StartBalance, senderEvmSubstrateStartBalance.toString(), 'substrate balance does not match web3 balance');
 
     // perform web3 call, send value back to the original substrate/alice account
     const gasPrice = web3.utils.toWei("1", 'gwei');
@@ -147,12 +147,12 @@ describe('Substrate <> EVM balances test', async () => {
 
     // verify end balances
     const web3EndBalance = await web3.eth.getBalance(evmAddress);
-    const evmSubstrateEndBalance = await api.query.system.account(substrateEvmAddress);
+    const evmSubstrateEndBalance = await fetchBalance(substrateEvmAddress);
     const senderWeb3EndBalance = await web3.eth.getBalance(senderAddress);
-    const senderEvmSubstrateEndBalance = await api.query.system.account(senderSubstrateAddress);
-    assert.equal(senderWeb3EndBalance, senderEvmSubstrateEndBalance.data.free.toString(), 'sender substrate balance does not match web3 balance');
+    const senderEvmSubstrateEndBalance = await fetchBalance(senderSubstrateAddress);
+    assert.equal(senderWeb3EndBalance, senderEvmSubstrateEndBalance.toString(), 'sender substrate balance does not match web3 balance');
     assert.equal(senderWeb3EndBalance, web3.utils.toBN(senderWeb3StartBalance).sub(value).sub(gasUsed).toString(), 'incorrect web3 sender balance');
     assert.equal(web3EndBalance, web3.utils.toBN(web3StartBalance).add(value).toString(), 'incorrect web3 recipient balance');
-    assert.equal(web3EndBalance, evmSubstrateEndBalance.data.free.toString(), 'recipient substrate balance does not match web3 balance')
+    assert.equal(web3EndBalance, evmSubstrateEndBalance.toString(), 'recipient substrate balance does not match web3 balance')
   });
 });

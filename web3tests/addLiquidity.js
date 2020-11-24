@@ -10,8 +10,8 @@ const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2P
 
 describe('Add Liquidity Test', () => {
    it('should create uniswap pair', async () => {
-      const FACTORY_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
-      const ROUTER_ADDRESS = '0x50275d3F95E0F2FCb2cAb2Ec7A231aE188d7319d';
+      const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
+      const ROUTER_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
    
       // deploy two tokens
       const web3 = initWeb3();
@@ -88,6 +88,12 @@ describe('Add Liquidity Test', () => {
       const pair = await PairContract.at(pairAddress);
       const result = await pair.getReserves.call({ from: account });
       console.log(result);
+      console.log('result[0].toString()');
+      console.log(result[0].toString());
+      console.log(amount0);
+      console.log('result[1].toString()');
+      console.log(result[1].toString());
+      console.log(amount1);
       assert.equal(result[0].toString(), amount0);
       assert.equal(result[1].toString(), amount1);
    });

@@ -26,15 +26,17 @@ const deploy = async () => {
    const routerAddress = await deployContract(
      "UniswapV2Router02",
      UniswapV2Router02,
-     [ factoryAddress, WETH9Address ],
+     [ FACTORY_ADDRESS, WETH_ADDRESS ],
    );
-   const tokenAAddress = await deployContract("TokenA", TokenA, [ web3.utils.toWei('8000000') ]);
-   const tokenBAddress = await deployContract("TokenB", TokenB, [ web3.utils.toWei('8000000') ]);
+   // const tokenBAddress = await deployContract("TokenB", TokenB, [ web3.utils.toWei('8000000') ]);
+   // const tokenAAddress = await deployContract("TokenA", TokenA, [ web3.utils.toWei('8000000') ]);
+   // await deployPair();
 };
 
 const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
 const TOKEN_A_ADDRESS = '0xe573BCA813c741229ffB2488F7856C6cAa841041';
 const WETH_ADDRESS = '0x42e2EE7Ba8975c473157634Ac2AF4098190fc741';
+
 const deployPair = async () => {
    // deploy a pair immediately
    const factory = new web3.eth.Contract(UniswapV2Factory.abi, FACTORY_ADDRESS);
@@ -63,5 +65,5 @@ const deployPair = async () => {
    }
 }
 
-// deploy();
-deployPair();
+deploy();
+// deployPair();

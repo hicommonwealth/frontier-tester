@@ -10,8 +10,9 @@ const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2P
 
 describe('Add Liquidity Test', () => {
    it('should create uniswap pair', async () => {
-      const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
-      const ROUTER_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
+      // need to update these addresses after every yarn deploy, create -- new addr
+      const FACTORY_ADDRESS = '0x27e5Ee255a177D1902D7FF48D66f950ed9408867'; 
+      const ROUTER_ADDRESS = '0x690b076B0442c445CbE7ba50F8245E60f6BE9dD1';
    
       // deploy two tokens
       const web3 = initWeb3();

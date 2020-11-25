@@ -38,7 +38,7 @@ const deploy = async () => {
    const router = await d(
       "UniswapV2Router02",
      UniswapV2Router02,
-     [ FACTORY_ADDRESS, WETH_ADDRESS ],
+     [ factory.address, weth9.address ],
    );
    process.exit(0);
    // const tokenBAddress = await deployContract("TokenB", TokenB, [ web3.utils.toWei('8000000') ]);

@@ -10,8 +10,8 @@ const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2P
 
 describe('Add Liquidity Test', () => {
    it('should create uniswap pair', async () => {
-      const FACTORY_ADDRESS = '0x73b647cbA2FE75Ba05B8e12ef8F8D6327D6367bF';
-      const ROUTER_ADDRESS = '0x08425D9Df219f93d5763c3e85204cb5B4cE33aAa';
+      const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
+      const ROUTER_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
    
       // deploy two tokens
       const web3 = initWeb3();
@@ -58,7 +58,7 @@ describe('Add Liquidity Test', () => {
          "0", "0",
          account,
          Math.ceil(Date.now() / 1000) + (60 * 20), // 1 day
-         { from: account, gas: web3.utils.toWei('100') },
+         { from: account, gas: web3.utils.toWei('100') }, // { from: account, gasLimit: 10000000, gasPrice: 1500000000 },
       ];
       console.log('Adding liquidity with args: ', args);
       const liquidityReceipt = await router.addLiquidity(...args);

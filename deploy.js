@@ -1,5 +1,6 @@
 const EdgewarePrivateKeyProvider = require ('./private-provider')
 const Web3 = require('web3');
+const contract = require("@truffle/contract");
 
 // libraries
 const Multicall = require('./build/contracts/Multicall.json');
@@ -13,21 +14,33 @@ const TokenB = require('./build/contracts/TokenB.json');
 
 // Initialization
 const privKey = '99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E342';
-const address = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
-const provider = new EdgewarePrivateKeyProvider(privKey, "http://localhost:9933/", 42);
+// const address = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
+// const provider = new EdgewarePrivateKeyProvider(privKey, "http://localhost:9933/", 42);
+const provider = new Web3.providers.HttpProvider('http://localhost:9933/');
 const web3 = new Web3(provider);
 
-const { deployContract } = require('./utils');
+const { deployContract, account } = require('./utils');
 
 const deploy = async () => {
-   const multicallAddress = await deployContract("Multicall", Multicall);
-   const factoryAddress = await deployContract("UniswapV2Factory", UniswapV2Factory, [ address ]);
-   const WETH9Address = await deployContract("WETH9", WETH9);
-   const routerAddress = await deployContract(
-     "UniswapV2Router02",
+   const d = async (name, Contract, args = []) => {
+      let c = contract({
+         abi: Contract.abi,
+         unlinked_binary: Contract.bytecode,
+      });
+      c.setProvider(web3.currentProvider);
+      let res = await c.new(...args, { from: account });
+      console.log(`${name} deployed at address ${res.address}`);
+      return res;
+   };
+   const multicall = await d("Multicall", Multicall);
+   const factory = await d("UniswapV2Factory", UniswapV2Factory, [ account ]);
+   const weth9 = await d("WETH9", WETH9);
+   const router = await d(
+      "UniswapV2Router02",
      UniswapV2Router02,
      [ FACTORY_ADDRESS, WETH_ADDRESS ],
    );
+   process.exit(0);
    // const tokenBAddress = await deployContract("TokenB", TokenB, [ web3.utils.toWei('8000000') ]);
    // const tokenAAddress = await deployContract("TokenA", TokenA, [ web3.utils.toWei('8000000') ]);
    // await deployPair();

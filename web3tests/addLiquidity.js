@@ -10,8 +10,8 @@ const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2P
 
 describe('Add Liquidity Test', () => {
    it('should create uniswap pair', async () => {
-      const FACTORY_ADDRESS = '0x5c4242beB94dE30b922f57241f1D02f36e906915';
-      const ROUTER_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
+      const FACTORY_ADDRESS = '0x73b647cbA2FE75Ba05B8e12ef8F8D6327D6367bF';
+      const ROUTER_ADDRESS = '0x08425D9Df219f93d5763c3e85204cb5B4cE33aAa';
    
       // deploy two tokens
       const web3 = initWeb3();
@@ -24,7 +24,7 @@ describe('Add Liquidity Test', () => {
          unlinked_binary: TokenA.bytecode,
       });
       TokenAContract.setProvider(web3.currentProvider);
-      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account, gasPrice: 1000000000 });
+      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account });
       const address0 = token0.address;
 
       console.log('Deploying second token...');
@@ -33,16 +33,16 @@ describe('Add Liquidity Test', () => {
          unlinked_binary: TokenB.bytecode,
       });
       TokenBContract.setProvider(web3.currentProvider);
-      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account, gasPrice: 1000000000 });
+      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account });
       const address1 = token1.address;
 
       console.log('Approving first token...');
       const receipt0 = await token0.approve(ROUTER_ADDRESS, amount0, {
-         from: account, gasLimit: 10000000, gasPrice: 1000000000
+         from: account
       });
       console.log('Approving second token...');
       const receipt1 = await token1.approve(ROUTER_ADDRESS, amount1, {
-         from: account, gasLimit: 10000000, gasPrice: 1000000000
+         from: account
       });
    
       // create the pair
@@ -58,7 +58,7 @@ describe('Add Liquidity Test', () => {
          "0", "0",
          account,
          Math.ceil(Date.now() / 1000) + (60 * 20), // 1 day
-         { from: account, gasLimit: 10000000, gasPrice: 1500000000 },
+         { from: account, gas: web3.utils.toWei('100') },
       ];
       console.log('Adding liquidity with args: ', args);
       const liquidityReceipt = await router.addLiquidity(...args);
@@ -70,10 +70,11 @@ describe('Add Liquidity Test', () => {
       });
       FactoryContract.setProvider(web3.currentProvider);
       console.log('Querying factory for pair...');
-      const factory = await FactoryContract.at(FACTORY_ADDRESS);
+      const factory = await FactoryContract.at(FACTORY_ADDRESS, { from: account });
       const pairAddress = await factory.getPair.call(address0, address1, {
-         from: account, gasPrice: 1500000000,
+         from: account,
       });
+      console.log(pairAddress);
       const nPairs = await factory.allPairsLength.call({ from: account });
    
       // query the pair's reserves

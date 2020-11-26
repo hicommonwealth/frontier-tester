@@ -1,6 +1,6 @@
 ## Frontier Tester
 
-Unit tests for Frontier. To run all the tests, use the following:
+Unit tests for Edgeware Frontier. To run all the tests, use the following:
 
 ```
 yarn test web3tests

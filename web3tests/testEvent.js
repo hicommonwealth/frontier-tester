@@ -18,36 +18,36 @@ describe("EventContract test", async () => {
     assert.equal(res.receipt.logs[0].event, 'e');
   });
 
-  it('should receive event thru web3 subscribe', async () => {
-    // init with wsprovider
-    const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:9944/"));
-    web3.eth.accounts.wallet.add({
-      privateKey: privKey,
-      address: account,
-    });
-    const c = await deployContract('EventContract', EventContract, [], web3);
+  // it('should receive event thru web3 subscribe', async () => {
+  //   // init with wsprovider
+  //   const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:9944/"));
+  //   web3.eth.accounts.wallet.add({
+  //     privateKey: privKey,
+  //     address: account,
+  //   });
+  //   const c = await deployContract('EventContract', EventContract, [], web3);
 
-    // init subscription
-    await new Promise(async (resolve) => {
-      c.events.e().on('data', (data) => {
-        console.log(data);
-        resolve();
-      });
+  //   // init subscription
+  //   await new Promise(async (resolve) => {
+  //     c.events.e().on('data', (data) => {
+  //       console.log(data);
+  //       resolve();
+  //     });
 
-      // make the tx
-      // NOTE: we cannot use .send() because `sendTransaction` is not supported
-      const tx = c.methods.emitEvent();
-      const data = tx.encodeABI();
-      const signedTx = await web3.eth.accounts.signTransaction(
-        {
-          from: account,
-          data,
-          gasLimit: 8000000,
-          gasPrice: 1000000000,
-        },
-        privKey
-      );
-      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-    });
-  })
+  //     // make the tx
+  //     // NOTE: we cannot use .send() because `sendTransaction` is not supported
+  //     const tx = c.methods.emitEvent();
+  //     const data = tx.encodeABI();
+  //     const signedTx = await web3.eth.accounts.signTransaction(
+  //       {
+  //         from: account,
+  //         data,
+  //         gasLimit: 8000000,
+  //         gasPrice: 1000000000,
+  //       },
+  //       privKey
+  //     );
+  //     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+  //   });
+  // })
 });

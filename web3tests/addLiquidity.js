@@ -1,6 +1,7 @@
 const contract = require("@truffle/contract");
 const { assert } = require("chai");
 const { account, initWeb3 } = require('../utils');
+const { deploy } = require('../deploy');
 
 const TokenA = require('../build/contracts/TokenA.json');
 const TokenB = require('../build/contracts/TokenB.json');
@@ -9,11 +10,15 @@ const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/Uniswap
 const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
 
 describe('Add Liquidity Test', () => {
-   it('should create uniswap pair', async () => {
-      // need to update these addresses after every yarn deploy, create -- new addr
-      const FACTORY_ADDRESS = '0x27e5Ee255a177D1902D7FF48D66f950ed9408867'; 
-      const ROUTER_ADDRESS = '0x690b076B0442c445CbE7ba50F8245E60f6BE9dD1';
-   
+   let FACTORY_ADDRESS
+   let ROUTER_ADDRESS
+
+   before(async function() {
+      const d = await deploy();
+      [FACTORY_ADDRESS, ROUTER_ADDRESS] = d;
+    });
+
+   it('should create uniswap pair', async () => {   
       // deploy two tokens
       const web3 = initWeb3();
       const amount0 = web3.utils.toWei('10');

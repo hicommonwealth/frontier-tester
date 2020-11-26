@@ -26,17 +26,17 @@ describe("TimeContract test", async () => {
     // fetch initial values
     let now = await t.viewNow.call({ from: account });
     let dNow = blockTimeifyDate(Date.now()).toString();
-    assert.equal(dNow.substring(0, dNow.length - 1), now.toString().substring(0, now.toString().length - 1));
+    assert.equal(dNow.substring(0, dNow.length - 4), now.toString().substring(0, now.toString().length - 1));
     // wait 4s
     await timeout(4000);
     const now2 = await t.viewNow.call({ from: account });
     dNow = blockTimeifyDate(Date.now()).toString();
-    assert.equal(dNow.substring(0, dNow.length - 1), now2.toString().substring(0, now2.toString().length - 1));
+    assert.equal(dNow.substring(0, dNow.length - 4), now2.toString().substring(0, now2.toString().length - 1));
 
     // wait 4s
     await timeout(4000);
     const now3 = await t.viewNow.call({ from: account });
     dNow = blockTimeifyDate(Date.now()).toString();
-    assert.equal(dNow.substring(0, dNow.length - 1), now3.toString().substring(0, now3.toString().length - 1));
+    assert.equal(dNow.substring(0, dNow.length - 4), now3.toString().substring(0, now3.toString().length - 1));
   });
 });

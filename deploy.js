@@ -22,7 +22,6 @@ const web3 = new Web3(provider);
 const { deployContract, account } = require('./utils');
 
 const deploy = async () => {
-   console.log('hi');
    const d = async (name, Contract, args = []) => {
       let c = contract({
          abi: Contract.abi,
@@ -41,7 +40,6 @@ const deploy = async () => {
      UniswapV2Router02,
      [ factory.address, weth9.address ],
    );
-   console.log('hi again');
    return [factory.address, router.address];
    // const tokenBAddress = await deployContract("TokenB", TokenB, [ web3.utils.toWei('8000000') ]);
    // const tokenAAddress = await deployContract("TokenA", TokenA, [ web3.utils.toWei('8000000') ]);

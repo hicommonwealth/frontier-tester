@@ -1,6 +1,7 @@
 const contract = require("@truffle/contract");
 const { assert } = require("chai");
 const { account, initWeb3 } = require('../utils');
+const { deploy } = require('../deploy');
 
 const TokenA = require('../build/contracts/TokenA.json');
 const TokenB = require('../build/contracts/TokenB.json');
@@ -9,10 +10,15 @@ const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/Uniswap
 const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
 
 describe('Add Liquidity Test', () => {
-   it('should create uniswap pair', async () => {
-      const FACTORY_ADDRESS = '0xF8cef78E923919054037a1D03662bBD884fF4edf';
-      const ROUTER_ADDRESS = '0x50275d3F95E0F2FCb2cAb2Ec7A231aE188d7319d';
-   
+   let FACTORY_ADDRESS
+   let ROUTER_ADDRESS
+
+   before(async function() {
+      const d = await deploy();
+      [FACTORY_ADDRESS, ROUTER_ADDRESS] = d;
+    });
+
+   it('should create uniswap pair', async () => {   
       // deploy two tokens
       const web3 = initWeb3();
       const amount0 = web3.utils.toWei('10');
@@ -24,7 +30,7 @@ describe('Add Liquidity Test', () => {
          unlinked_binary: TokenA.bytecode,
       });
       TokenAContract.setProvider(web3.currentProvider);
-      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account, gasPrice: 1000000000 });
+      const token0 = await TokenAContract.new(web3.utils.toWei('100'), { from: account });
       const address0 = token0.address;
 
       console.log('Deploying second token...');
@@ -33,16 +39,16 @@ describe('Add Liquidity Test', () => {
          unlinked_binary: TokenB.bytecode,
       });
       TokenBContract.setProvider(web3.currentProvider);
-      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account, gasPrice: 1000000000 });
+      const token1 = await TokenBContract.new(web3.utils.toWei('100'), { from: account });
       const address1 = token1.address;
 
       console.log('Approving first token...');
       const receipt0 = await token0.approve(ROUTER_ADDRESS, amount0, {
-         from: account, gasLimit: 10000000, gasPrice: 1000000000
+         from: account
       });
       console.log('Approving second token...');
       const receipt1 = await token1.approve(ROUTER_ADDRESS, amount1, {
-         from: account, gasLimit: 10000000, gasPrice: 1000000000
+         from: account
       });
    
       // create the pair
@@ -58,7 +64,7 @@ describe('Add Liquidity Test', () => {
          "0", "0",
          account,
          Math.ceil(Date.now() / 1000) + (60 * 20), // 1 day
-         { from: account, gasLimit: 10000000, gasPrice: 1500000000 },
+         { from: account, gas: web3.utils.toWei('100') }, // { from: account, gasLimit: 10000000, gasPrice: 1500000000 },
       ];
       console.log('Adding liquidity with args: ', args);
       const liquidityReceipt = await router.addLiquidity(...args);
@@ -70,10 +76,11 @@ describe('Add Liquidity Test', () => {
       });
       FactoryContract.setProvider(web3.currentProvider);
       console.log('Querying factory for pair...');
-      const factory = await FactoryContract.at(FACTORY_ADDRESS);
+      const factory = await FactoryContract.at(FACTORY_ADDRESS, { from: account });
       const pairAddress = await factory.getPair.call(address0, address1, {
-         from: account, gasPrice: 1500000000,
+         from: account,
       });
+      console.log(pairAddress);
       const nPairs = await factory.allPairsLength.call({ from: account });
    
       // query the pair's reserves
@@ -88,6 +95,12 @@ describe('Add Liquidity Test', () => {
       const pair = await PairContract.at(pairAddress);
       const result = await pair.getReserves.call({ from: account });
       console.log(result);
+      console.log('result[0].toString()');
+      console.log(result[0].toString());
+      console.log(amount0);
+      console.log('result[1].toString()');
+      console.log(result[1].toString());
+      console.log(amount1);
       assert.equal(result[0].toString(), amount0);
       assert.equal(result[1].toString(), amount1);
    });

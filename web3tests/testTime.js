@@ -8,7 +8,7 @@ function timeout(ms) {
 }
 
 function blockTimeifyDate(n) {
-  return Math.floor(n / 6000) * 6000;
+  return Math.floor(n / 6000) * 6;
 }
 
 describe("TimeContract test", async () => {

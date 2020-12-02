@@ -2,6 +2,7 @@ const { assert } = require('chai');
 const Web3 = require('web3');
 const EventContract = require('../build/contracts/EventContract.json');
 const { deployContract, account, initWeb3, privKey } = require('../utils');
+const sub_account = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
 const contract = require("@truffle/contract");
 
 describe("EventContract test", async () => {
@@ -23,31 +24,29 @@ describe("EventContract test", async () => {
     const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:9944/"));
     web3.eth.accounts.wallet.add({
       privateKey: privKey,
-      address: account,
+      address: sub_account,
     });
     const c = await deployContract('EventContract', EventContract, [], web3);
 
     // init subscription
     await new Promise(async (resolve) => {
-      c.events.e().on('data', (data) => {
+      c.events.allEvents(function(error, event){ console.log(event); })
+      .on('data', (data) => {
         console.log(data);
         resolve();
-      });
+      })
+      .on('error', console.error);
 
-      // make the tx
-      // NOTE: we cannot use .send() because `sendTransaction` is not supported
-      const tx = c.methods.emitEvent();
-      const data = tx.encodeABI();
-      const signedTx = await web3.eth.accounts.signTransaction(
-        {
-          from: account,
-          data,
-          gasLimit: 8000000,
-          gasPrice: 1000000000,
-        },
-        privKey
-      );
-      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+      // initialize another web3 connection with dev signer and fire tx'es to subscribe to
+      const anotherWeb3 = initWeb3();
+
+      let EC = contract({
+        abi: EventContract.abi,
+        unlinked_binary: EventContract.bytecode,
+      });
+      EC.setProvider(anotherWeb3.currentProvider);
+      const cc = await EC.at(c._address);
+      const tx = await cc.emitEvent({ from: account });
     });
   })
 });

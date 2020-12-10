@@ -5,6 +5,8 @@ import { assert } from 'chai';
 const { convertToEvmAddress, convertToSubstrateAddress } = require('../utils.js');
 const EdgewarePrivateKeyProvider = require('../private-provider')
 import BN from 'bn.js';
+import { dev } from '@edgeware/node-types';
+import { TypeRegistry } from '@polkadot/types';
 
 describe('Substrate <> EVM balances test', async () => {
   let web3: Web3;
@@ -44,17 +46,20 @@ describe('Substrate <> EVM balances test', async () => {
     web3Url = 'http://localhost:9933';
     web3 = new Web3(web3Url);
     id = await web3.eth.net.getId();
-    assert.equal(id, 42);
+    assert.equal(id, 7);
 
     // init polkadot
     const polkadotUrl = 'ws://localhost:9944';
-    api = await new ApiPromise({
+    const registry = new TypeRegistry();
+    api = await (new ApiPromise({
       provider: new WsProvider(polkadotUrl),
-      types: { }
-    }).isReady;
+      registry,
+      ...dev,
+    })).isReady;
     const { ss58Format } = await api.rpc.system.properties();
     const substrateId = +ss58Format.unwrap();
-    assert.equal(substrateId, id);
+    // NOTE: in dev mode, the eth id will still be 7 but the substrate id will be 42
+    // assert.equal(substrateId, id);
 
     // init addresses
     keyring = new Keyring({ ss58Format: id, type: 'sr25519' }).addFromUri('//Alice');

@@ -52,10 +52,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@edgeware/node-types@^3.1.0-beta.0":
-  version "3.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.1.0-beta.0.tgz#55a26dc4d15869f5a44063a7ad3968d14f551c10"
-  integrity sha512-oV6otW/I9K9re8eYwPDsVj0sfVK/7HvZ9g6e4K0I99nAEDWJ36nK2oDzkn92cx8Ndqh5tf48fQOKVpHgEzZlvA==
+"@edgeware/node-types@^3.1.0-beta.3":
+  version "3.1.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.1.0-beta.3.tgz#518304cf3d8ec26ca2bf2d4073b9f1b1e573b6ea"
+  integrity sha512-0fytqfZUsT8nY567w+HDD1CMAPUTTjrh6/k3VR2MbMslM21M3JhoKgyIZSiwWPvn1vUVop/R5gxig3rppk7Fyg==
 
 "@ethersproject/abi@5.0.0-beta.153":
   version "5.0.0-beta.153"

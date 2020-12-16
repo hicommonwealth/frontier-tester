@@ -22,30 +22,32 @@ describe("EventContract test", async () => {
   it('should receive event thru web3 subscribe', async () => {
     // init with wsprovider
     const web3 = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:9944/"));
-    web3.eth.accounts.wallet.add({
-      privateKey: privKey,
-      address: sub_account,
-    });
+    web3.eth.accounts.wallet.add(privKey);
+    web3.eth.defaultAccount = account;
     const c = await deployContract('EventContract', EventContract, [], web3);
+    const cAddress = c._address;
 
     // init subscription
     await new Promise(async (resolve) => {
-      c.events.allEvents(function(error, event){ console.log(event); })
+      c.events.allEvents((error, data) => {
+        assert.equal(data.event, 'e');
+        assert.equal(data.address, cAddress);
+      })
       .on('data', (data) => {
-        console.log(data);
+        assert.equal(data.event, 'e');
+        assert.equal(data.address, cAddress);
         resolve();
       })
       .on('error', console.error);
 
       // initialize another web3 connection with dev signer and fire tx'es to subscribe to
       const anotherWeb3 = initWeb3();
-
       let EC = contract({
         abi: EventContract.abi,
         unlinked_binary: EventContract.bytecode,
       });
       EC.setProvider(anotherWeb3.currentProvider);
-      const cc = await EC.at(c._address);
+      const cc = await EC.at(cAddress);
       const tx = await cc.emitEvent({ from: account });
     });
   })

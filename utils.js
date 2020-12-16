@@ -14,6 +14,10 @@ const initWeb3 = (pkey = privKey) => {
     providerOrUrl: "http://localhost:9933/",
   });
   const web3 = new Web3(provider);
+
+  // ensure native web3 sending works as well as truffle provider
+  web3.eth.accounts.wallet.add(privKey);
+  web3.eth.defaultAccount = account;
   return web3;
 };
 

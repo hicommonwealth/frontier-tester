@@ -1,5 +1,5 @@
-const EdgewarePrivateKeyProvider = require('./private-provider');
 const Web3 = require('web3');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 const { decodeAddress, encodeAddress, blake2AsHex } = require('@polkadot/util-crypto');
 
 // const account = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
@@ -8,14 +8,13 @@ const account = '0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a';
 const privKey = '1111111111111111111111111111111111111111111111111111111111111111';
 
 const initWeb3 = (pkey = privKey) => {
-  //const provider = new EdgewarePrivateKeyProvider(pkey, "http://localhost:9933/", 42);
-  const provider = new Web3.providers.HttpProvider('http://localhost:9933/');
+  // const provider = new Web3.providers.HttpProvider('http://localhost:9933/');
+  const provider = new HDWalletProvider({
+    privateKeys: [ pkey ],
+    providerOrUrl: "http://localhost:9933/",
+  });
   const web3 = new Web3(provider);
   return web3;
-};
-
-const initProvider = (pkey = privKey) => {
-  return new EdgewarePrivateKeyProvider(pkey, "http://localhost:9933/", 42);
 };
 
 const deployContract = async (name, c, args = [], web3 = undefined) => {
@@ -65,7 +64,6 @@ module.exports = {
   account,
   privKey,
   initWeb3,
-  initProvider,
   deployContract,
   convertToEvmAddress,
   convertToSubstrateAddress,

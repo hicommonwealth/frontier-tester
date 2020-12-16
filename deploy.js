@@ -13,13 +13,8 @@ const TokenA = require('./build/contracts/TokenA.json');
 const TokenB = require('./build/contracts/TokenB.json');
 
 // Initialization
-const privKey = '99B3C12287537E38C90A9219D4CB074A89A16E9CDB20BF85728EBD97C343E342';
-// const address = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
-// const provider = new EdgewarePrivateKeyProvider(privKey, "http://localhost:9933/", 42);
-const provider = new Web3.providers.HttpProvider('http://localhost:9933/');
-const web3 = new Web3(provider);
-
-const { deployContract, account } = require('./utils');
+const { account, privKey, initWeb3 } = require('./utils');
+const web3 = initWeb3();
 
 const deploy = async () => {
    const d = async (name, Contract, args = []) => {

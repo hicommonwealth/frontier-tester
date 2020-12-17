@@ -18,6 +18,7 @@
     "@edgeware/node-types": "^3.1.0-beta.3",
     "@openzeppelin/contracts": "^2.5.0",
     "@polkadot/api": "2.10.2-11",
+    "@polkadot/api-contract": "2.10.2-11",
     "@polkadot/keyring": "^4.2.2-11",
     "@polkadot/util-crypto": "^4.2.2-11",
     "@truffle/contract": "^4.2.22",

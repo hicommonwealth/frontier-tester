@@ -176,11 +176,17 @@ describe('Upgrade Tests', async () => {
     assert.isTrue(!!blueprint);
 
     // deploy a contract
-    const value = new BN('10000000000000000');
-    const gasLimit = 33276800;
-    const contract: ContractPromise = await new Promise((resolve) => {
+    const value = new BN('1230000000000');
+    const gasLimit = new BN('100000000000');
+    const contract: ContractPromise = await new Promise((resolve, reject) => {
       blueprint.createContract('new', value, gasLimit, true).signAndSend(eve, (res) => {
-        if (res.isCompleted) {
+        if (res.dispatchError) {
+          if (res.dispatchError.isModule) {
+            const details = api.registry.findMetaError(res.dispatchError.asModule.toU8a());
+            console.error(`${details.section}::${details.name}: ${details.documentation[0]}`);
+          }
+          reject(res.dispatchError);
+        } else if (res.isCompleted) {
           resolve(res.contract);
         }
       })

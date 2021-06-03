@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 const contract = require("@truffle/contract");
-const { account, initWeb3, privKey } = require('../utils');
+const { account, initWeb3, privKey, GAS_PRICE, GAS_LIMIT } = require('../utils');
 const ECRecovery = require('../build/contracts/ECRecovery.json');
 const EdgewarePrivateKeyProvider = require('../private-provider');
 const signing_account = account;
@@ -16,7 +16,7 @@ describe('ECRecovery test', async () => {
         const web3 = new Web3(provider);
         return web3;
       };
-  
+
       signWeb3 = signingWeb3(signing_privKey);
     });
 
@@ -36,7 +36,7 @@ describe('ECRecovery test', async () => {
     const messageHex = '0x' + Buffer.from(message).toString('hex');
     const signature = await signWeb3.eth.sign(messageHex, signing_account);
     const hash = signWeb3.utils.sha3('\x19Ethereum Signed Message:\n' + message.length + message);
-    
+
     // recover the signer
     const address = await c.recover(hash, signature, { from: account, gas: web3.utils.toWei('1', 'ether') });
     assert.equal(address.toLowerCase(), signing_account.toLowerCase());
@@ -58,7 +58,7 @@ describe('ECRecovery test', async () => {
     const RAW_TX = {
       from: signing_account,
       gasPrice: "0x01",
-      gas: web3.utils.toWei('1', 'ether'),
+      gas: GAS_LIMIT,
       to: ECRECOVER_PRECOMPILE_ADDRESS,
       value: "0x0",
       data: `0x${hash.toString('hex')}${sigPart}`,
@@ -73,7 +73,7 @@ describe('ECRecovery test', async () => {
       from: signing_account,
       to: ECRECOVER_PRECOMPILE_ADDRESS,
       value: '0x0',
-      gas: web3.utils.toWei('1', 'ether'),
+      gas: GAS_LIMIT,
       data: `0x${hash.toString('hex')}${sigPart}`,
     });
 

@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { account, initWeb3 } = require('../utils');
+const { account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
 const contract = require("@truffle/contract");
 const FallbackContract = require('../build/contracts/FallbackContract.json');
 
@@ -23,7 +23,7 @@ describe('Fallback test', async () => {
       from: account,
       to: c.address,
       value: valueSent.toString(),
-      gas: web3.utils.toWei('1', 'ether'),
+      gas: GAS_LIMIT,
       data: functionSig,
     });
     const balanceAfter = await web3.eth.getBalance(account);

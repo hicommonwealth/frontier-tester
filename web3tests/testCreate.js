@@ -1,7 +1,7 @@
 const { assert } = require("chai");
 const rlp = require('rlp');
 const keccak = require('keccak');
-const { account, initWeb3  } = require('../utils');
+const { account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
 
 const CreateContract = require('../build/contracts/CreateContract.json');
 const SubContract = require('../build/contracts/SubContract.json');
@@ -17,12 +17,12 @@ describe("CreateContract test", async () => {
     });
     Create.setProvider(web3.currentProvider);
 
-    let c = await Create.new({ from: account });
+    let c = await Create.new({ from: account, gasLimit: GAS_LIMIT });
     let startNonce = await web3.eth.getTransactionCount(c.address);
     console.log(`CreateContract address: ${c.address}, nonce: ${startNonce}`);
     // create without value
-    let receipt = await c.spawn({ from: account });
-    let address = await c.deployed.call({ from: account });
+    let receipt = await c.spawn({ from: account, gasLimit: GAS_LIMIT });
+    let address = await c.deployed.call({ from: account, gasLimit: GAS_LIMIT });
 
     var Sub = contract({
       abi: SubContract.abi,
@@ -47,13 +47,13 @@ describe("CreateContract test", async () => {
     });
     Create.setProvider(web3.currentProvider);
 
-    let c = await Create.new({ from: account });
+    let c = await Create.new({ from: account, gasLimit: GAS_LIMIT });
     let startNonce = await web3.eth.getTransactionCount(c.address);
     console.log(`CreateContract address: ${c.address}, nonce: ${startNonce}`);
     // create with value
     const value = web3.utils.toWei('10', 'ether');
-    await c.spawnWithValue({ value, from: account });
-    address = await c.deployed.call({ from: account });
+    await c.spawnWithValue({ value, from: account, gasLimit: GAS_LIMIT });
+    address = await c.deployed.call({ from: account, gasLimit: GAS_LIMIT });
     var Sub = contract({
       abi: SubContract.abi,
       unlinked_binary: SubContract.bytecode,
@@ -61,7 +61,7 @@ describe("CreateContract test", async () => {
     Sub.setProvider(web3.currentProvider);
     let cSub = await Sub.at(address);
 
-    let balOnContract = await cSub.getValue.call({ from: account });
+    let balOnContract = await cSub.getValue.call({ from: account, gasLimit: GAS_LIMIT });
     let balance = await web3.eth.getBalance(cSub.address);
     assert.equal(balOnContract, value, 'new subcontract should have balance paid to it');
     assert.equal(balOnContract, balance, 'new subcontract should have balance paid to it');

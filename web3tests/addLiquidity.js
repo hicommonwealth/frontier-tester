@@ -1,6 +1,6 @@
 const contract = require("@truffle/contract");
 const { assert } = require("chai");
-const { account, initWeb3 } = require('../utils');
+const { account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
 const { deploy } = require('../deploy');
 
 const TokenA = require('../build/contracts/TokenA.json');
@@ -9,9 +9,6 @@ const TokenB = require('../build/contracts/TokenB.json');
 const UniswapV2Router02 = require('../node_modules/@uniswap/v2-periphery/build/UniswapV2Router02.json');
 const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/UniswapV2Factory.json');
 const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
-
-const GAS_LIMIT = 6_700_000; // eth block gas limit is 15m now
-const GAS_PRICE = 1_000_000_000; // 1 gwei
 
 describe('Add Liquidity Test', () => {
    let FACTORY_ADDRESS

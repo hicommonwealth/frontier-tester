@@ -4,7 +4,7 @@ const rlp = require('rlp');
 const keccak = require('keccak');
 const { assert } = require('chai');
 const contract = require("@truffle/contract");
-const { deployContract, account, initWeb3 } = require('../utils');
+const { deployContract, account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
 
 describe("Lockdrop test", async () => {
   const SECONDS_IN_DAY = 86400;
@@ -47,7 +47,7 @@ describe("Lockdrop test", async () => {
     time = await utility.getCurrentTimestamp(web3);
     assert.equal(web3.utils.toBN(lockdrop.address).toString(), web3.utils.toBN(contractAddr).toString());
   });
-  
+
   // Events don't work
   it('should lock funds and increment nonce', async function () {
     let time = await utility.getCurrentTimestamp(web3);
@@ -68,7 +68,7 @@ describe("Lockdrop test", async () => {
     await lockdrop.lock(THREE_MONTHS, account, true, {
       from: account,
       value: value,
-      gas: 1500000,
+      gas: GAS_LIMIT,
       gasPrice: 1000,
     });
 
@@ -98,7 +98,7 @@ describe("Lockdrop test", async () => {
     await lockdrop.lock(THREE_MONTHS, account, true, {
       from: account,
       value: value2,
-      gas: 1500000,
+      gas: GAS_LIMIT,
       gasPrice: 1000000000,
     });
 

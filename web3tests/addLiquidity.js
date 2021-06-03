@@ -10,8 +10,8 @@ const UniswapV2Router02 = require('../node_modules/@uniswap/v2-periphery/build/U
 const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/UniswapV2Factory.json');
 const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
 
-const GAS_LIMIT = 10000000;
-const GAS_PRICE = 1500000000;
+const GAS_LIMIT = 6_700_000; // eth block gas limit is 15m now
+const GAS_PRICE = 1_000_000_000; // 1 gwei
 
 describe('Add Liquidity Test', () => {
    let FACTORY_ADDRESS
@@ -131,8 +131,8 @@ describe('Add Liquidity Test', () => {
       const result2 = await pair.getReserves.call({ from: account });
       console.log('Found token0 in LP pool:', web3.utils.fromWei(result2[0].toString()));
       console.log('Found token1 in LP pool:', web3.utils.fromWei(result2[1].toString()));
-      console.log('token0 balance:', (await token0.balanceOf(account)).toString());
-      console.log('token1 balance:', (await token1.balanceOf(account)).toString());
+      console.log('token0 balance:', web3.utils.fromWei(await token0.balanceOf(account)).toString());
+      console.log('token1 balance:', web3.utils.fromWei(await token1.balanceOf(account)).toString());
       console.log('Done!');
    });
 });

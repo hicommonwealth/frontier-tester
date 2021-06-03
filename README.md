@@ -1,32 +1,38 @@
 ## Edgeware Frontier Tester
 
-Unit tests for Edgeware Frontier. 
+Unit tests for Edgeware Frontier.
 
-You'll need to run a frontier-compatible Edgeware node with dev signing enabled.
-You can use [jake.frontier-up-2](https://github.com/hicommonwealth/edgeware-node/tree/jake.frontier-up-2).
-Start the Edgeware node with the following command.
+You'll need to run a frontier-compatible [Edgeware node](https://github.com/hicommonwealth/edgeware-node).
+
+Start the Edgeware node with the following command:
 
 ```
-./target/release/edgeware --dev --enable-dev-signer
+./target/release/edgeware --dev
 ```
 
 To run all included frontier tests, use the following:
 
 ```
-yarn test web3tests
+yarn all-tests
+```
+
+To run only the Uniswap add liquidity test, use the following:
+
+```
+yarn add-liquidity
 ```
 
 To run a specific test:
 
 ```
-yarn test web3tests/[testName]
+ts-mocha --timeout 100000 --exit web3tests/[testName]
 ```
 
 The following functionality is tested:
 - Adding Liquidity to a fresh Uniswap deployment
 - Generating an ERC20 Token Allowance
-- Create Factory Contract 
-- Create2 Factory Contract 
+- Create Factory Contract
+- Create2 Factory Contract
 - Calling a precompile (ECRecover)
 - Event emission and subscription
 - Fallback function

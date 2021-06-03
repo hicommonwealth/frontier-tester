@@ -8,6 +8,7 @@ const account = '0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a';
 const privKey = '1111111111111111111111111111111111111111111111111111111111111111';
 
 const initWeb3 = (pkey = privKey) => {
+  console.log('Initializing web3 provider at http://localhost:9933/');
   // const provider = new Web3.providers.HttpProvider('http://localhost:9933/');
   const provider = new HDWalletProvider({
     privateKeys: [ pkey ],

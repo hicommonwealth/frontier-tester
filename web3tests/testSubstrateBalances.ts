@@ -2,7 +2,7 @@ import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import Web3 from 'web3';
 import { assert } from 'chai';
-const { convertToEvmAddress, convertToSubstrateAddress } = require('../utils.js');
+const { convertToEvmAddress, convertToSubstrateAddress, GAS_PRICE, GAS_LIMIT } = require('../utils.js');
 const EdgewarePrivateKeyProvider = require('../private-provider')
 import BN from 'bn.js';
 import { dev } from '@edgeware/node-types';
@@ -46,7 +46,7 @@ describe('Substrate <> EVM balances test', async () => {
     web3Url = 'http://localhost:9933';
     web3 = new Web3(web3Url);
     id = await web3.eth.net.getId();
-    assert.equal(id, 7);
+    assert.equal(id, 2021);
 
     // init polkadot
     const polkadotUrl = 'ws://localhost:9944';
@@ -73,7 +73,7 @@ describe('Substrate <> EVM balances test', async () => {
     const web3StartBalance = await web3.eth.getBalance(evmAddress);
     const polkadotStartBalance = await fetchBalance(address);
     const evmSubstrateStartBalance = await fetchBalance(substrateEvmAddress);
-  
+
     assert.isTrue(polkadotStartBalance.gt(value), 'sender account must have sufficient balance');
     assert.equal(web3StartBalance, evmSubstrateStartBalance.toString(), 'substrate balance does not match web3 balance');
 

@@ -1,27 +1,27 @@
-import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
-import { KeyringPair } from '@polkadot/keyring/types';
-import Web3 from 'web3';
-import { assert } from 'chai';
+const { ApiPromise, WsProvider, Keyring } = require('@polkadot/api');
+const { KeyringPair } = require('@polkadot/keyring/types');
+const Web3 = require('web3');
+const { assert } = require('chai');
 const { convertToEvmAddress, convertToSubstrateAddress, GAS_PRICE, GAS_LIMIT } = require('../utils.js');
 const EdgewarePrivateKeyProvider = require('../private-provider')
-import BN from 'bn.js';
-import { dev } from '@edgeware/node-types';
-import { TypeRegistry } from '@polkadot/types';
+const BN = require('bn.js');
+const { dev } = require('@edgeware/node-types');
+const { TypeRegistry } = require('@polkadot/types');
 
 describe('Substrate <> EVM balances test', async () => {
-  let web3: Web3;
-  let web3Url: string;
-  let api: ApiPromise;
-  let id: number;
-  let keyring: KeyringPair;
-  let address: string;
-  let evmAddress: string;
-  let substrateEvmAddress: string;
+  let web3;
+  let web3Url;
+  let api;
+  let id;
+  let keyring;
+  let address;
+  let evmAddress;
+  let substrateEvmAddress;
 
   const value = new BN('10000000000000000000');
 
   // returns the fee
-  let sendSubstrateBalance = async (v: BN, addr = substrateEvmAddress): Promise<BN> => {
+  let sendSubstrateBalance = async (v, addr = substrateEvmAddress) => {
     return new Promise(async (resolve) => {
       const tx = api.tx.balances.transfer(addr, v);
       const { partialFee } = await tx.paymentInfo(keyring);
@@ -36,7 +36,7 @@ describe('Substrate <> EVM balances test', async () => {
     })
   }
 
-  const fetchBalance = async (acct: string): Promise<BN> => {
+  const fetchBalance = async (acct) => {
     const res = await api.query.system.account(acct);
     return res.data.free;
   }
@@ -101,7 +101,7 @@ describe('Substrate <> EVM balances test', async () => {
     assert.equal(web3StartBalance, evmSubstrateStartBalance.toString(), 'substrate balance does not match web3 balance');
 
     // execute withdraw
-    const fees: BN = await new Promise(async (resolve) => {
+    const fees = await new Promise(async (resolve) => {
       const tx = api.tx.evm.withdraw(evmAddress, value);
       const { partialFee } = await tx.paymentInfo(keyring);
       return tx.signAndSend(keyring, (result) => {
@@ -131,7 +131,7 @@ describe('Substrate <> EVM balances test', async () => {
     const provider = new EdgewarePrivateKeyProvider(privKey, web3Url, id);
     const web3 = new Web3(provider);
     const senderAddress = provider.address;
-    const senderSubstrateAddress: string = convertToSubstrateAddress(senderAddress, id);
+    const senderSubstrateAddress = convertToSubstrateAddress(senderAddress, id);
 
     // give the EVM account some balance to send back via web3
     await sendSubstrateBalance(value.clone().muln(2), senderSubstrateAddress);

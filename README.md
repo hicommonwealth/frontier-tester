@@ -39,8 +39,7 @@ The following functionality is tested:
   - Nonce does not behave as expected
 - [X] Create2 Factory Contract
 - [X] Calling a precompile (ECRecover)
-- [ ] Event emission and subscription
-  - Subscribing to event is configured incorrectly in the test, and produces an InvalidTransaction:Stale error.
+- [X] Event emission and subscription
 - [X] Fallback function
 - [X] Hashing (on chain and with web3 provider): keccak256, sha3, ripemd
 - [X] Contract Interfaces

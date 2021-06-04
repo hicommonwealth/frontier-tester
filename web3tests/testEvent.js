@@ -52,7 +52,8 @@ describe("EventContract test", async () => {
       EC.setProvider(anotherWeb3.currentProvider);
       try {
         const cc = await EC.at(cAddress);
-        const tx = await cc.emitEvent({ from: account });
+        const nonce = await anotherWeb3.eth.getTransactionCount(account, 'pending');
+        const tx = await cc.emitEvent({ from: account, nonce: nonce + 1 });
       } catch (err) {
         console.error(err);
         reject(err);

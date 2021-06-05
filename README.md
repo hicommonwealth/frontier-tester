@@ -8,7 +8,7 @@ You'll need to run a frontier-compatible [Edgeware node](https://github.com/hico
 
 ### Quickstart
 
-Start the Edgeware node with the following command:
+Start the Edgeware node:
 
 ```
 ./target/release/edgeware --dev
@@ -46,7 +46,6 @@ The following functionality is tested:
 - [ ] Edgeware Lockdrop
   - Nonce does not behave as expected
 - [X] Contract Owners
-- [ ] Transferring balance into EVM pallet
-  - Needs an update to @polkadot/api
+- [X] Transferring balance into EVM pallet
 - [X] Timestamps
 - [X] Contract creation with non-zero contract balance

@@ -5,7 +5,7 @@ const { assert } = require('chai');
 const { convertToEvmAddress, convertToSubstrateAddress, GAS_PRICE, GAS_LIMIT } = require('../utils.js');
 const EdgewarePrivateKeyProvider = require('../private-provider')
 const BN = require('bn.js');
-const { dev } = require('@edgeware/node-types');
+const { spec } = require('@edgeware/node-types');
 const { TypeRegistry } = require('@polkadot/types');
 
 describe('Substrate <> EVM balances test', async () => {
@@ -54,7 +54,7 @@ describe('Substrate <> EVM balances test', async () => {
     api = await (new ApiPromise({
       provider: new WsProvider(polkadotUrl),
       registry,
-      ...dev,
+      ...spec,
     })).isReady;
     const { ss58Format } = await api.rpc.system.properties();
     const substrateId = +ss58Format.unwrap();

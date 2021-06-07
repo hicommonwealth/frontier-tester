@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 const Create2Factory = require('../build/contracts/Create2Factory.json');
 const ValueContract = require('../build/contracts/ValueContract.json');
-const { deployContract, account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
+const { deployContract, account, initWeb3 } = require('../utils');
 const contract = require("@truffle/contract");
 
 describe('Create2Factory test', async () => {
@@ -13,11 +13,11 @@ describe('Create2Factory test', async () => {
     });
     Create2.setProvider(web3.currentProvider);
 
-    let c = await Create2.new({ from: account, gasLimit: GAS_LIMIT });
+    let c = await Create2.new({ from: account });
 
     // load bytecode and deploy
-    await c.deploy(5, { from: account, gasLimit: GAS_LIMIT });
-    const addr = await c.viewAddr.call({ from: account, gasLimit: GAS_LIMIT });
+    await c.deploy(5, { from: account });
+    const addr = await c.viewAddr.call({ from: account });
 
     let Value = contract({
       abi: ValueContract.abi,
@@ -27,7 +27,7 @@ describe('Create2Factory test', async () => {
 
     // load new contract and check methods
     const valueContract = await Value.at(addr);
-    const value = await valueContract.getValue.call({ from: account, gasLimit: GAS_LIMIT });
+    const value = await valueContract.getValue.call({ from: account });
     assert.equal(value, '0');
   });
 });

@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
+const { account, initWeb3 } = require('../utils');
 const contract = require("@truffle/contract");
 const FallbackContract = require('../build/contracts/FallbackContract.json');
 

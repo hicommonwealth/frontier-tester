@@ -1,6 +1,6 @@
 const contract = require("@truffle/contract");
 const { assert } = require("chai");
-const { account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
+const { account, initWeb3 } = require('../utils');
 const { deploy } = require('../deploy');
 
 const TokenA = require('../build/contracts/TokenA.json');
@@ -66,7 +66,7 @@ describe('Add Liquidity Test', () => {
          account,
          Math.ceil(Date.now() / 1000) + (60 * 20), // 1 day
         // { from: account, gas: web3.utils.toWei('100') },
-        { from: account, gasLimit: GAS_LIMIT, gasPrice: GAS_PRICE },
+        { from: account },
       ];
       console.log('Adding liquidity with args: ', args);
       const liquidityReceipt = await router.addLiquidity(...args);
@@ -123,7 +123,7 @@ describe('Add Liquidity Test', () => {
         [ token0.address, token1.address ],
         account,
         deadline,
-        { from: account, gasLimit: GAS_LIMIT, gasPrice: GAS_PRICE },
+        { from: account },
       );
       const result2 = await pair.getReserves.call({ from: account });
       console.log('Found token0 in LP pool:', web3.utils.fromWei(result2[0].toString()));

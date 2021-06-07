@@ -4,7 +4,7 @@ const rlp = require('rlp');
 const keccak = require('keccak');
 const { assert } = require('chai');
 const contract = require("@truffle/contract");
-const { deployContract, account, initWeb3, GAS_PRICE, GAS_LIMIT } = require('../utils');
+const { deployContract, account, initWeb3 } = require('../utils');
 
 describe("Lockdrop test", async () => {
   const SECONDS_IN_DAY = 86400;

@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 const contract = require("@truffle/contract");
-const { account, initWeb3, privKey, GAS_PRICE, GAS_LIMIT } = require('../utils');
+const { account, initWeb3, privKey } = require('../utils');
 const ECRecovery = require('../build/contracts/ECRecovery.json');
 const EdgewarePrivateKeyProvider = require('../private-provider');
 const signing_account = account;

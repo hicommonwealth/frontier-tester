@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 const Web3 = require('web3');
 const EventContract = require('../build/contracts/EventContract.json');
-const { deployContract, account, initWeb3, privKey, GAS_PRICE, GAS_LIMIT } = require('../utils');
+const { deployContract, account, initWeb3, privKey } = require('../utils');
 const sub_account = '0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b';
 const contract = require("@truffle/contract");
 

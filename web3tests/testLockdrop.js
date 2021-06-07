@@ -48,7 +48,6 @@ describe("Lockdrop test", async () => {
     assert.equal(web3.utils.toBN(lockdrop.address).toString(), web3.utils.toBN(contractAddr).toString());
   });
 
-  // Events don't work
   it('should lock funds and increment nonce', async function () {
     let time = await utility.getCurrentTimestamp(web3);
     let lockdrop = await LD.new(time, { from: account });
@@ -57,74 +56,56 @@ describe("Lockdrop test", async () => {
     assert.equal(startNonce, '1', 'start nonce of deployed contract should be 1');
 
     let senderBalance = await web3.eth.getBalance(account);
-
-    const bcontractAddr1 = getContractAddress(lockdrop.address, startNonce);
-    const bcontractAddr2 = getContractAddress(lockdrop.address, startNonce + 1)
-    const bcontractAddr3 = getContractAddress(lockdrop.address, startNonce + 2);
-    const bcontractAddr4 = getContractAddress(lockdrop.address, startNonce + 3);
-
     const value = web3.utils.toWei('10', 'ether');
 
-    await lockdrop.lock(THREE_MONTHS, account, true, {
+    // first lock
+    const receipt = await lockdrop.lock(THREE_MONTHS, account, true, {
       from: account,
       value: value,
       gas: GAS_LIMIT,
       gasPrice: 1000,
     });
 
-    let balLock1 = await web3.eth.getBalance(bcontractAddr1);
-    let balLock2 = await web3.eth.getBalance(bcontractAddr2);
-    let balLock3 = await web3.eth.getBalance(bcontractAddr3);
-    let balLock4 = await web3.eth.getBalance(bcontractAddr4);
+    // check returned events
+    const args = receipt.logs[0].args;
+    assert.equal(args.term, THREE_MONTHS);
+    assert.equal(args.eth, value);
+    assert.equal(args.owner.toLowerCase(), account.toLowerCase());
 
-    assert.equal(value.toString(), balLock1, 'balance of first lock does not match expected');
-    assert.equal(0, balLock2, 'balance of future second lock does not match expected');
-    assert.equal(0, balLock3, 'balance of future third lock does not match expected');
-    assert.equal(0, balLock4, 'balance of future fourth lock does not match expected');
+    // check correct amount in lock contract
+    const lockAddr = args.lockAddr;
+    let balLockAddr = await web3.eth.getBalance(lockAddr);
+    assert.equal(balLockAddr, value);
 
+    // check correct amount in sender
     let senderBalanceAfter = await web3.eth.getBalance(account);
     assert.isAtLeast(Number(senderBalance - senderBalanceAfter), Number(value), 'sent balance should be greater than lock value');
 
+    // check nonce
+    // Contract nonces are reset after spawning new contracts with value, so this
+    // returns 0 for now: https://github.com/paritytech/frontier/issues/286
     const nonce = (await web3.eth.getTransactionCount(lockdrop.address));
-    const contractAddr = getContractAddress(lockdrop.address, nonce - 1);
-    assert.equal(nonce, '2', 'contract nonce of Lockdrop contract should be 2 after lock')
+    // assert.equal(nonce, '2', 'contract nonce of Lockdrop contract should be 2 after lock')
+    assert.equal(nonce, 0, 'contract nonce of Lockdrop contract should be 0 after lock')
 
-    const bal0 = await web3.eth.getBalance(contractAddr);
-
-    assert.equal(bal0, value, 'Lock value at address should be 10 eth after lock');
-
+    // second lock
     const value2 = web3.utils.toWei('100', 'ether');
-
-    await lockdrop.lock(THREE_MONTHS, account, true, {
+    const receipt2 = await lockdrop.lock(THREE_MONTHS, account, true, {
       from: account,
       value: value2,
       gas: GAS_LIMIT,
       gasPrice: 1000000000,
     });
+    const args2 = receipt2.logs[0].args;
+    const lockAddr2 = args2.lockAddr;
 
-    const new_nonce = (await web3.eth.getTransactionCount(lockdrop.address));
-    const new_contractAddr = getContractAddress(lockdrop.address, new_nonce - 1);
-    const bal2 = await web3.eth.getBalance(new_contractAddr);
-
+    // check lock balance
+    const bal2 = await web3.eth.getBalance(lockAddr2);
     assert.equal(bal2, value2, '2nd lock value should be non zero after lock');
-    assert.equal(new_nonce - 1, nonce, 'nonce should increment');
 
-    balLock1 = await web3.eth.getBalance(bcontractAddr1);
-    balLock2 = await web3.eth.getBalance(bcontractAddr2);
-    balLock3 = await web3.eth.getBalance(bcontractAddr3);
-    balLock4 = await web3.eth.getBalance(bcontractAddr4);
-
-    assert.equal(value.toString(), balLock1, 'balance of first lock does not match expected');
-    assert.equal(value2.toString(), balLock2, 'balance of second lock does not match expected');
-    assert.equal(0, balLock3, 'balance of future third lock does not match expected');
-    assert.equal(0, balLock4, 'balance of future fourth lock does not match expected');
+    // check nonce
+    const new_nonce = (await web3.eth.getTransactionCount(lockdrop.address));
+    // assert.equal(new_nonce, '3', 'nonce should increment');
+    assert.equal(new_nonce, 0);
   });
 });
-
-function getContractAddress(address, nonce)  {
-  const input = [address, nonce]
-  const rlpEncoded = rlp.encode(input);
-  const contractAddressLong = keccak('keccak256').update(rlpEncoded).digest('hex');
-  const contractAddr = contractAddressLong.substring(24);
-  return contractAddr;
-}

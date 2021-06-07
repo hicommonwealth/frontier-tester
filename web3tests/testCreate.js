@@ -18,7 +18,7 @@ describe("CreateContract test", async () => {
     Create.setProvider(web3.currentProvider);
 
     let c = await Create.new({ from: account, gasLimit: GAS_LIMIT });
-    let startNonce = await web3.eth.getTransactionCount(c.address, 'pending');
+    let startNonce = await web3.eth.getTransactionCount(c.address);
     console.log(`CreateContract address: ${c.address}, nonce: ${startNonce}`);
     // create without value
     let receipt = await c.spawn({ from: account, gasLimit: GAS_LIMIT });
@@ -34,7 +34,7 @@ describe("CreateContract test", async () => {
     assert.equal(balance, '0', 'balance of deployed subcontract should be 0');
 
     // check nonce
-    let nonce = await web3.eth.getTransactionCount(c.address, 'pending');
+    let nonce = await web3.eth.getTransactionCount(c.address);
     assert.equal(nonce, startNonce + 1, 'contract nonce should increment');
   });
 
@@ -48,7 +48,7 @@ describe("CreateContract test", async () => {
     Create.setProvider(web3.currentProvider);
 
     let c = await Create.new({ from: account, gasLimit: GAS_LIMIT });
-    let startNonce = await web3.eth.getTransactionCount(c.address, 'pending');
+    let startNonce = await web3.eth.getTransactionCount(c.address);
     console.log(`CreateContract address: ${c.address}, nonce: ${startNonce}`);
     // create with value
     const value = web3.utils.toWei('10', 'ether');
@@ -67,7 +67,7 @@ describe("CreateContract test", async () => {
     assert.equal(balOnContract, balance, 'new subcontract should have balance paid to it');
 
     // check nonce
-    const nonce = await web3.eth.getTransactionCount(c.address, 'pending');
+    const nonce = await web3.eth.getTransactionCount(c.address);
     assert.equal(nonce, startNonce + 1, 'contract nonce should increment twice');
   });
 });

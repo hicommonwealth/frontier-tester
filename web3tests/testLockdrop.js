@@ -38,7 +38,7 @@ describe("Lockdrop test", async () => {
     let time = await utility.getCurrentTimestamp(web3);
     let lockdrop = await LD.new(time, { from: account });
     const sender = account;
-    const nonce = (await web3.eth.getTransactionCount(sender, 'pending'));
+    const nonce = (await web3.eth.getTransactionCount(sender));
     const input = [ sender, nonce - 1 ];
     const rlpEncoded = rlp.encode(input);
     const contractAddressLong = keccak('keccak256').update(rlpEncoded).digest('hex');
@@ -53,7 +53,7 @@ describe("Lockdrop test", async () => {
     let time = await utility.getCurrentTimestamp(web3);
     let lockdrop = await LD.new(time, { from: account });
 
-    let startNonce = await web3.eth.getTransactionCount(lockdrop.address, 'pending');
+    let startNonce = await web3.eth.getTransactionCount(lockdrop.address);
     assert.equal(startNonce, '1', 'start nonce of deployed contract should be 1');
 
     let senderBalance = await web3.eth.getBalance(account);
@@ -85,7 +85,7 @@ describe("Lockdrop test", async () => {
     let senderBalanceAfter = await web3.eth.getBalance(account);
     assert.isAtLeast(Number(senderBalance - senderBalanceAfter), Number(value), 'sent balance should be greater than lock value');
 
-    const nonce = (await web3.eth.getTransactionCount(lockdrop.address, 'pending'));
+    const nonce = (await web3.eth.getTransactionCount(lockdrop.address));
     const contractAddr = getContractAddress(lockdrop.address, nonce - 1);
     assert.equal(nonce, '2', 'contract nonce of Lockdrop contract should be 2 after lock')
 
@@ -102,7 +102,7 @@ describe("Lockdrop test", async () => {
       gasPrice: 1000000000,
     });
 
-    const new_nonce = (await web3.eth.getTransactionCount(lockdrop.address, 'pending'));
+    const new_nonce = (await web3.eth.getTransactionCount(lockdrop.address));
     const new_contractAddr = getContractAddress(lockdrop.address, new_nonce - 1);
     const bal2 = await web3.eth.getBalance(new_contractAddr);
 

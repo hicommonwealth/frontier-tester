@@ -1,7 +1,5 @@
 ## Edgeware Frontier Tester
 
-**⚠️ This project is under active development!**
-
 Unit tests for Edgeware Frontier.
 
 You'll need to run a frontier-compatible [Edgeware node](https://github.com/hicommonwealth/edgeware-node). We are currently testing against the `erup-4` branch.
@@ -40,13 +38,14 @@ The following functionality is tested:
 - [X] Adding Liquidity to a fresh Uniswap deployment
 - [X] Generating an ERC20 Token Allowance
 - [ ] Create Factory Contract
+  - See the known issue above
 - [X] Create2 Factory Contract
 - [X] Calling a precompile (ECRecover)
 - [X] Event emission and subscription
 - [X] Fallback function
 - [X] Hashing (on chain and with web3 provider): keccak256, sha3, ripemd
 - [X] Contract Interfaces
-- [ ] Edgeware Lockdrop
+- [X] Edgeware Lockdrop
 - [X] Contract Owners
 - [X] Transferring balance into EVM pallet
 - [X] Timestamps

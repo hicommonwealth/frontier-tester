@@ -44,11 +44,11 @@ describe('Add Liquidity Test', () => {
     const address1 = token1.address;
 
     console.log('Approving first token...');
-    const receipt0 = await token0.approve(ROUTER_ADDRESS, amount0, {
+    const receipt0 = await token0.approve(ROUTER_ADDRESS, web3.utils.toWei('100'), {
       from: account
     });
     console.log('Approving second token...');
-    const receipt1 = await token1.approve(ROUTER_ADDRESS, amount1, {
+    const receipt1 = await token1.approve(ROUTER_ADDRESS, web3.utils.toWei('100'), {
       from: account
     });
 

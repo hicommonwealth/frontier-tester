@@ -556,19 +556,19 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.4.1.tgz#03c891fec7f93be0ae44ed74e57a122a38732ce7"
   integrity sha512-cUriqMauq1ylzP2TxePNdPqkwI7Le3Annh4K9rrpvKfSBB/bdW+Iu1ihBaTIABTAAJ85LmKL5SSPPL9ry8d1gQ==
 
-"@picoswap/pico-test-tokens@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@picoswap/pico-test-tokens/-/pico-test-tokens-1.0.1.tgz#62604bac2fa3d1d093c9fa6f691f2b777d8afb39"
-  integrity sha512-jlgfWmwQ91WQipIhj+ya1xVP8rQCSMKxiRd0cBFakeZFYtZcJcqrXj9hH9dacWtbIThs8NHqjgp8zyt/rzoqVw==
+"@picoswap/pico-test-tokens@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@picoswap/pico-test-tokens/-/pico-test-tokens-1.0.2.tgz#317f15f435faa93f40eed710674166e1ea3961f1"
+  integrity sha512-qlv7PfW1yFGnPU37QSqEo2qhVX5mHVlcpIh0s8w+yL/fDp+yZesrt28CeCWW10ve15uRzKJqK1p5t1WDYDvEkQ==
   dependencies:
     "@nomiclabs/hardhat-waffle" "^2.0.1"
     hardhat "^2.2.1"
     solidity-coverage "^0.7.16"
 
-"@picoswap/pico-v2-core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@picoswap/pico-v2-core/-/pico-v2-core-2.0.0.tgz#4e88a22c3ca57259d9fcedb8e9dc6638d59b5961"
-  integrity sha512-uL7fjuMcJpwEe7I4qdTQpyd4Ch3cqslGTb+8HJfl/w+mOhPJU+N1Wdiwh/F0qXzyk8ACDjZCr3C5VtVwLk+NeA==
+"@picoswap/pico-v2-core@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@picoswap/pico-v2-core/-/pico-v2-core-2.0.2.tgz#90a77ad91822500d6c9a6b95f2a0e9cb19ecbb6f"
+  integrity sha512-MOWPc01A78xRwVuUoyvntaPghq5EC0+kDwLnIEeaIlM/V9yAfRhMxAPsdtl20ahlvGrD7RaSMSBbbDOBQIOBVA==
   dependencies:
     "@nomiclabs/hardhat-waffle" "^2.0.1"
     "@openzeppelin/contracts" "^3.4.0"

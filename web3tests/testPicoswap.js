@@ -22,16 +22,16 @@ const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/Uniswap
 const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
 
 describe('Add Liquidity Test', () => {
-  let WEDG9_ADDRESS = '0x79EaFd0B5eC8D3f945E6BB2817ed90b046c0d0Af';
-  let MULTICALL_ADDRESS = '0x73b647cbA2FE75Ba05B8e12ef8F8D6327D6367bF';
-  let SERRANO_ADDRESS = '0x59AF421cB35fc23aB6C8ee42743e6176040031f4';
-  let JALAPENO_ADDRESS = '0x4fb87c52Bb6D194f78cd4896E3e574028fedBAB9';
-  let HABANERO_ADDRESS = '0xEd8d61f42dC1E56aE992D333A4992C3796b22A74';
-  let SHISHITO_ADDRESS = '0x47eb28D8139A188C5686EedE1E9D8EDE3Afdd543';
-  let POBLANO_ADDRESS = '0x52d2878492EF30d625fc54EC52c4dB7f010d471e';
+  let WEDG9_ADDRESS = '0x05df5B40D6806f4c9A933e77b390AD7Bd373aDd4';
+  let MULTICALL_ADDRESS = '0xF811AB52f26FF9B68b890f36a6BabB0C47e924df';
+  let SERRANO_ADDRESS = '0xf83148cc489f7CA102D2F44A943eCE4DC2953C73';
+  let JALAPENO_ADDRESS = '0x4679064F1740ab564ce39473c824572d2Fea26A2';
+  let HABANERO_ADDRESS = '0xCAd71203E80D3fAa4b48c34Ec0cD113A04148ee6';
+  let SHISHITO_ADDRESS = '0x25CB1a7d342A5F1FC5f170b31Bfb22b5505e67A3';
+  let POBLANO_ADDRESS = '0x4f396293F489dd8B344F1fDA416D39Cf728fb389';
 
-  let FACTORY_ADDRESS = '0x986885C706f3480205C381AEC6D8A13294806C9E';
-  let ROUTER_ADDRESS = '0x9ccDE3aEB0b245a032b50f1C3352770143Df22F2';
+  let FACTORY_ADDRESS = '0x072264cD573d2cee4844b17Fe0456F3fDA598124';
+  let ROUTER_ADDRESS = '0x93aa2e8E03A26022f1896762896DB5278e3aE5DF';
 
   it('should create uniswap pair', async () => {
     // deploy two tokens
@@ -93,7 +93,7 @@ describe('Add Liquidity Test', () => {
       }
     ];
     console.log('Adding token/EDG liquidity...');
-    const liquidityEDGReceipt = await router.addLiquidityEDG(...edgArgs);
+    const liquidityEDGReceipt = await router.addLiquidityETH(...edgArgs);
     console.log('Added token/EDG liquidity...');
     console.log(liquidityEDGReceipt);
 

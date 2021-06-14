@@ -18,8 +18,8 @@ const HabaneroMeta = require('@picoswap/pico-test-tokens/deployments/beresheet/H
 const PoblanoMeta = require('@picoswap/pico-test-tokens/deployments/beresheet/Poblano.json');
 
 const UniswapV2Router02 = require('../node_modules/@picoswap/pico-v2-core/deployments/beresheet/UniswapV2Router02.json');
-const UniswapV2Factory = require('../node_modules/@uniswap/v2-core/build/UniswapV2Factory.json');
-const UniswapV2Pair = require('../node_modules/@uniswap/v2-core/build/UniswapV2Pair.json');
+const UniswapV2Factory = require('../node_modules/@picoswap/pico-v2-core/deployments/beresheet/UniswapV2Factory.json');
+const UniswapV2Pair = require('../node_modules/@picoswap/pico-v2-core/deployments/beresheet/UniswapV2Pair.json');
 
 describe('Add Liquidity Test', () => {
   let WEDG9_ADDRESS = '0x05df5B40D6806f4c9A933e77b390AD7Bd373aDd4';

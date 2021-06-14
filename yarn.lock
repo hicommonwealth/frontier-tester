@@ -565,10 +565,10 @@
     hardhat "^2.2.1"
     solidity-coverage "^0.7.16"
 
-"@picoswap/pico-v2-core@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@picoswap/pico-v2-core/-/pico-v2-core-2.0.2.tgz#90a77ad91822500d6c9a6b95f2a0e9cb19ecbb6f"
-  integrity sha512-MOWPc01A78xRwVuUoyvntaPghq5EC0+kDwLnIEeaIlM/V9yAfRhMxAPsdtl20ahlvGrD7RaSMSBbbDOBQIOBVA==
+"@picoswap/pico-v2-core@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@picoswap/pico-v2-core/-/pico-v2-core-2.0.3.tgz#e95c0adf89214cf2f54490e376fbb101f91ddb74"
+  integrity sha512-RBZ5qWKkjt3qt2qVMwPUgFP302ssTEESF3b55a7lYpRnXvdGdHrO1TVoaM/5zSApYtEsDA3PuUZZ3Xl/Yr+GwA==
   dependencies:
     "@nomiclabs/hardhat-waffle" "^2.0.1"
     "@openzeppelin/contracts" "^3.4.0"

@@ -546,15 +546,15 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
-"@openzeppelin/contracts@^2.5.0":
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-2.5.1.tgz#c76e3fc57aa224da3718ec351812a4251289db31"
-  integrity sha512-qIy6tLx8rtybEsIOAlrM4J/85s2q2nPkDqj/Rx46VakBZ0LwtFhXIVub96LXHczQX0vaqmAueDqNPXtbSXSaYQ==
-
 "@openzeppelin/contracts@^3.4.0":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.4.1.tgz#03c891fec7f93be0ae44ed74e57a122a38732ce7"
   integrity sha512-cUriqMauq1ylzP2TxePNdPqkwI7Le3Annh4K9rrpvKfSBB/bdW+Iu1ihBaTIABTAAJ85LmKL5SSPPL9ry8d1gQ==
+
+"@openzeppelin/contracts@^4.4.2":
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.4.2.tgz#4e889c9c66e736f7de189a53f8ba5b8d789425c2"
+  integrity sha512-NyJV7sJgoGYqbtNUWgzzOGW4T6rR19FmX1IJgXGdapGPWsuMelGJn9h03nos0iqfforCbCB0iYIR0MtIuIFLLw==
 
 "@picoswap/pico-test-tokens@^1.0.2":
   version "1.0.2"

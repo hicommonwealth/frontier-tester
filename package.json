@@ -19,7 +19,7 @@
     "@ethersproject/contracts": "^5.3.0",
     "@ethersproject/providers": "^5.3.0",
     "@ethersproject/solidity": "^5.3.0",
-    "@openzeppelin/contracts": "^2.5.0",
+    "@openzeppelin/contracts": "^4.7.2",
     "@picoswap/pico-test-tokens": "^1.0.2",
     "@picoswap/pico-v2-core": "^2.0.3",
     "@polkadot/api": "^4.12.1",
